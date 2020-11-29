@@ -1,0 +1,83 @@
+-----------------------------------------------------------------------
+|  CHAPTER 1 - INTRO                                                  |
+-----------------------------------------------------------------------
+
+- RESTful APIs
+
+    - Representational State Transfer
+    - Roy Fielding, 2000
+    - Not a standard or protocol, more of an architectural style
+    - Very scalable
+
+
+
+- Principles of REST
+
+    1. Client-Server
+         The client and server communicate through the interface and are independent of
+           each other.
+
+    2. Stateless
+         Every request is independent and complete.  There is no dependence on previous
+           requests or a session state.
+
+    3. Cacheable
+         Things can be cached on the server-side or client-side to improve performance.
+
+    4. Layered System
+         There can be multiple layers which perform different functions, such as caching
+           and encryption.
+
+    5. Uniform Interface
+         The interface always stays the same, which helps with decoupling the server and
+           client.
+
+
+
+- HTTP 
+
+    - Methods
+
+        GET       Read data
+        POST      Create data
+        PUT       Update data completely
+        PATCH     Update data partially
+        DELETE    Delete data
+
+
+    - Commonly Used Status Codes
+
+        200 OK             means the request has been successful. Could be a GET, PUT, or PATCH.
+        201 Created        means the POST request has been successful and a record has been created.
+        204 No Content     means the DELETE request has been successful.
+
+        400 Bad Request    means there is something wrong with the client request.
+        401 Unauthorized   means the client request is missing authentication details.
+        403 Forbidden      means the requested resource is forbidden.
+        404 Not Found      means the requested resource doesn't exist.
+
+
+
+- JSON
+
+    Syntax Basics:
+      - Arrays are enclosed by []
+      - Objects are represented by {}
+      - Names/values always exist in pairs and are delimited by :
+      - Strings are enclosed by ""
+
+
+    {  
+      "recipes":[    
+        {      
+          "id":1,
+          "name":"Egg Salad",
+          "description":"Place an egg in a saucepan and..."
+        },    
+        {      
+          "id":2,
+          "name":"Tomato Pasta",
+          "description":"Bring a large pot of lightly salted water to a boil..."
+        }
+      ]
+    }
