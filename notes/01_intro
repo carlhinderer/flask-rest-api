@@ -81,3 +81,44 @@
         }
       ]
     }
+
+
+
+- Sample App - Recipe Book
+
+    - Recipe Model
+
+        Id            = Unique id
+        Name          = Recipe Name
+        Description   =  Recipe Description
+
+
+    - Create a requirements.txt file:
+
+        requirements.txt
+        ---------------------------
+        Flask==1.0.3
+        httpie==1.0.2
+
+        $ pip install -r requirements.txt
+
+
+    - Now create a simple app in app.py:
+
+        app.py
+        ---------------------------
+        from flask import Flask
+
+        app = Flask(__name__)
+
+        @app.route("/")
+        def hello():
+            return "Hello World!"
+
+        if __name__ == "__main__":
+            app.run()
+
+
+    - And run it:
+
+        $ python app.py
