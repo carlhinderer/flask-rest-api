@@ -1,0 +1,69 @@
+-----------------------------------------------------------------------
+|  CHAPTER 3 - DATABASES                                              |
+-----------------------------------------------------------------------
+
+- Database Packages
+
+    - We'll be using Postgres as our database.  We will use the 'psycopg2' package to connect
+        our Flask application to it.  We could also use 'pgAdmin' for GUI management of
+        the DB if we wanted to.
+
+    - We'll use SQLAlchemy as our ORM.
+
+    - We'll use Flask-Migrate to handle the migrations.
+
+    - We'll use 'passlib' to hash passwords.
+
+    - Add these packages to 'requirements.txt':
+
+        Flask-SQLAlchemy==2.4.0
+        Flask-Migrate==2.5.2
+        psycopg2==2.8.3
+        passlib==1.7.1
+
+
+
+- Creating the Database
+
+    $ sudo su - postgres
+    $ psql
+
+    > CREATE DATABASE smilecook;
+    > CREATE USER smilecookuser WITH PASSWORD 'smilecookuser';
+    > GRANT ALL PRIVILEGES ON DATABASE smilecook TO smilecookuser;
+
+
+
+- Creating the User Model
+
+    - Attributes
+
+        id
+        username      # Unique
+        email         # Unique
+        password
+        is_active
+        recipes       # Join table relationship
+        created_at
+        updated_at
+
+    - Methods
+
+        get_by_username
+        get_by_email
+
+
+
+- Creating the Recipe Model
+
+    - Attributes
+
+        id
+        name
+        description
+        num_of_servings
+        cook_time
+        directions
+        is_publish
+        created_at
+        updated_at
