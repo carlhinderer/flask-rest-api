@@ -37,3 +37,16 @@
 
 
     - We define the recipe in 'smilecook/models/recipe.py'.
+
+
+
+- Resourceful Routing
+
+    - The main building blocks of Flask-RESTful are resources.  Resources are built on 
+        top of Flask's pluggable view.
+
+    - We will group the CRUD actions on a recipe under 'RecipeResource'.
+
+    - We will brouop the publish and unpublish actions under 'RecipePublishResource'.
+
+    - 
