@@ -67,3 +67,36 @@
     - Next we add the 'RecipeResource' to the same file.
 
     - Next we add the 'RecipePublishResource', also to the same file.
+
+    - If the client request is with an HTTP verb that has no corresponding handling method
+        in the resource, Flask-RESTful will return the HTTP status code 405 Method Not Allowed.
+
+
+
+- Configuring Endpoints
+
+    - Now that we have defined our resources, we will set up some endpoints so that users can
+        send requests to them.
+
+    - We will be using the 'add_resource' method on the API object to specify the URL for
+        these endpoints and route the client HTTP request to our resources.
+
+
+    - We'll create the 'app.py' file, which will be our main application file.
+
+        smilecook/app.py
+        -----------------------------------------------------------
+        from flask import Flask
+        from flask_restful import Api
+        
+        from resources.recipe import RecipeListResource, RecipeResource, RecipePublishResource
+        
+        app = Flask(__name__)
+        api = Api(app)
+        
+        api.add_resource(RecipeListResource, '/recipes')
+        api.add_resource(RecipeResource, '/recipes/<int:recipe_id>')
+        api.add_resource(RecipePublishResource, '/recipes/<int:recipe_id>/publish')
+        
+        if __name__ == '__main__':
+            app.run(port=5000, debug=True)
