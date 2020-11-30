@@ -1,0 +1,39 @@
+-----------------------------------------------------------------------
+|  CHAPTER 2 - BUILDING THE PROJECT                                   |
+-----------------------------------------------------------------------
+
+- Flask-RESTful Application
+
+    - Flask-RESTful is a Flask extension that allows us to quickly develop RESTful
+        APIs.
+
+
+    - Our recipe-sharing application, 'SmileCook', will have the following endpoints:
+
+        HTTP Verb    Description            Method Name                     URL
+        --------------------------------------------------------------------------------------
+        GET          Gets all recipes       RecipeListResource.get          /recipes
+        POST         Creates a recipe       RecipeListResource.post         /recipes
+
+        GET          Gets a recipe          RecipeResource.get              /recipes/1
+        PUT          Updates a recipe       RecipeResource.put              /recipes/1
+        DELETE       Deletes a recipe       RecipeResource.delete           /recipes/1
+
+        PUT          Sets to published      RecipePublishResource.put       /recipes/1/publish
+        DELETE       Sets to draft          RecipePublishResource.delete    /recipes/1/publish
+
+
+
+- Creating the Recipe Model
+
+    - The Recipe model will have the following attributes:
+
+        name:             The name of the recipe.
+        description:      The description of the recipe.
+        num_of_servings:  The number of servings.
+        cook_time:        The cooking time required. This is an integer whose units are in seconds.
+        directions:       The directions.
+        is_publish:       The publish status of the recipe; the default is draft.
+
+
+    - We define the recipe in 'smilecook/models/recipe.py'.
