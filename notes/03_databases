@@ -137,3 +137,11 @@
         if __name__ == '__main__':
             app = create_app()
             app.run()
+
+
+
+- Using Flask-Migrate to Build a Database Upgrade Script
+
+    - Initialize the database.  This will create a migration repository.
+
+        $ flask db init
