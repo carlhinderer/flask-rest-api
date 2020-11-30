@@ -100,3 +100,100 @@
         
         if __name__ == '__main__':
             app.run(port=5000, debug=True)
+
+
+    - Now we can run our application:
+
+        $ python app.py
+
+
+
+- Making HTTP Requests to the Smilecook API
+
+    - In httpie, 
+
+        description=            # Is for string argument
+        num_of_servings:=       # Is for non-string argument
+
+
+    - To create a recipe:
+
+        # httpie
+        http POST localhost:5000/recipes name="Cheese Pizza" 
+            description="This is a lovely cheese pizza" num_of_servings:=2 cook_time:=30 
+            directions="This is how you make it"
+
+        # curl
+        curl -i -X POST localhost:5000/recipes -H "Content-Type: application/json" 
+            -d '{"name":"Cheese Pizza", "description":"This is a lovely cheese pizza", 
+            "num_of_servings":2, "cook_time":30, "directions":"This is how you make it" }'
+
+
+    - Now, create a second recipe, so that we can test the auto-incrementing id creation:
+
+        # httpie
+        http POST localhost:5000/recipes name="Tomato Pasta" 
+            description="This is a lovely tomato pasta recipe" num_of_servings:=3 cook_time:=20 
+            directions="This is how you make it"
+
+        # curl
+        curl -i -X POST localhost:5000/recipes -H "Content-Type: application/json" 
+            -d '{"name":"Tomato Pasta", "description":"This is a lovely tomato pasta recipe", 
+            "num_of_servings":3, "cook_time":20, "directions":"This is how you make it"}'
+
+
+    - Now, we can test our recipe list.  Note that it will be empty for now, since none of our
+        recipes have been published.
+
+        # httpie
+        http GET localhost:5000/recipes
+
+        # curl
+        curl -i -X GET localhost:5000/recipes
+
+
+    - Now, we can publish a recipe.
+
+        # httpie
+        http PUT localhost:5000/recipes/1/publish
+
+        # curl
+        curl -i -X PUT localhost:5000/recipes/1/publish
+
+      Now, we will see the recipe in our recipe list.
+
+
+    - Now, for some negative testing, let's try calling a method that hasn't been defined
+        yet.  It should return a 405 METHOD NOT ALLOWED.
+
+        # httpie
+        http DELETE localhost:5000/recipes
+
+        # curl
+        curl -i -X DELETE localhost:5000/recipes
+
+
+    - To test modifying our recipes.
+
+        # httpie
+        http PUT localhost:5000/recipes/1 name="Lovely Cheese Pizza" 
+            description="This is a lovely cheese pizza recipe" num_of_servings:=3 cook_time:=60 
+            directions="This is how you make it"
+
+        # curl
+        curl -i -X PUT localhost:5000/recipes/1 -H "Content-Type: application/json" 
+            -d '{"name":"Lovely Cheese Pizza", "description":"This is a lovely cheese pizza recipe", 
+            "num_of_servings":3, "cook_time":60, "directions":"This is how you make it"}'
+
+
+    - To test retrieving a single recipe:
+
+        # httpie
+        http GET localhost:5000/recipes/1
+
+        # curl
+        curl -i -X GET localhost:5000/recipes/1
+
+
+    - Finally, we implement the functionality for deleting a recipe and that should
+        work also.
