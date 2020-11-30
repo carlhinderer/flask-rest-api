@@ -84,14 +84,7 @@
 
 
 
-- Sample App - Recipe Book
-
-    - Recipe Model
-
-        Id            = Unique id
-        Name          = Recipe Name
-        Description   =  Recipe Description
-
+- Sample App - Simplest Possible App
 
     - Create a requirements.txt file:
 
@@ -122,3 +115,65 @@
     - And run it:
 
         $ python app.py
+
+
+
+- Sample App - Recipe Book
+
+    - Recipe Model
+
+        Id            = Unique id
+        Name          = Recipe Name
+        Description   =  Recipe Description
+
+
+    - We add our view methods to GET, POST, and PUT recipes in 'recipes.py'.
+
+
+    - To get all of the recipes:
+
+        # httpie
+        http GET localhost:5000/recipes
+
+        # curl
+        curl -i -X GET localhost:5000/recipes
+
+
+    - To get a single recipe:
+
+        # httpie
+        http GET localhost:5000/recipes/1
+
+        # curl
+        curl -i -X GET localhost:5000/recipes/1 
+
+
+    - To create a new recipe:
+
+        # httpie
+        http POST localhost:5000/recipes name="Cheese Pizza" 
+            description="This is a lovely cheese pizza"
+
+        # curl
+        curl -i -X POST localhost:5000/recipes -H "Content-Type: application/json" 
+            -d '{"name":"Cheese Pizza", "description":"This is a lovely cheese pizza"}'
+
+
+    - To update an existing recipe:
+
+        # httpie
+        http PUT localhost:5000/recipes/3 name="Lovely Cheese Pizza" 
+            description="This is a lovely cheese pizza recipe."
+
+        # curl
+        curl -i -X PUT localhost:5000/recipes/3 -H "Content-Type: application/json" 
+            -d '{"name":"Lovely Cheese Pizza", "description":"This is a lovely cheese pizza recipe."}'
+
+
+    - To delete a recipe:
+
+        # httpie
+        http DELETE localhost:5000/recipes/1
+
+        # curl
+        curl -i -X DELETE localhost:5000/recipes/1
