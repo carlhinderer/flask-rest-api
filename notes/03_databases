@@ -97,4 +97,6 @@
 
     - Create the User model in 'models/user.py'.
 
+    - Next, change the Recipe model in 'models/recipe.py'.
+
     - 
