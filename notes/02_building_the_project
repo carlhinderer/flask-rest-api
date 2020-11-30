@@ -49,4 +49,19 @@
 
     - We will brouop the publish and unpublish actions under 'RecipePublishResource'.
 
-    - 
+    - Implementing these resources is simple.  We just need to inherit from the
+        'flask_restful.Resource' class and implement the corresponding HTTP verbs.
+
+
+
+- Defining an API Endpoint for the Recipe Model
+
+    - First, we create a folder called 'resources' under the project and create a file
+        called 'recipe.py' in it.
+
+    - We add the 'RecipeListResource' to our 'resources/recipe.py' file.
+
+    - Notice that we do not have to 'jsonify' our object before sending it to the client,
+        because Flask-RESTful does it for us behind the scenes.
+
+    - Next we add the 'RecipeResource' to the same file.
