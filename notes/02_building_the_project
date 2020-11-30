@@ -65,3 +65,5 @@
         because Flask-RESTful does it for us behind the scenes.
 
     - Next we add the 'RecipeResource' to the same file.
+
+    - Next we add the 'RecipePublishResource', also to the same file.
