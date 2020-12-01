@@ -141,3 +141,70 @@
             @jwt_optional
             def get(self, username):
                 ...
+
+
+    - Finally, we'll import our new resources in 'app.py'.
+
+        # app.py
+        ----------------------------
+        from resources.user import UserListResource, UserResource
+        from resources.token import TokenResource
+
+        def register_resources(app):
+            api.add_resource(UserListResource, '/users')
+            api.add_resource(UserResource, '/users/<string:username>')
+            api.add_resource(TokenResource, '/token')
+
+
+
+- Testing the User Login Function
+
+    - Now, we will test that the information obtained from the 'users/{username}' route is
+        different before and after user login.
+
+
+    - First, we'll create a new user:
+
+        $ http POST :5000/users username="James" email="james@gmail.com" password="WkQad19"
+
+
+    - Now, we'll see the id and username when we navigate to the route.
+
+        # Navigate to in browser
+        http://localhost:5000/users/James
+
+        # We see
+        {
+            "id": 3,
+            "username": "James"
+        }
+
+
+    - Next, we'll log in through the API.
+
+        $ http POST :5000/token email="james@gmail.com" password="WkQad19"
+
+        # Response
+        {
+            "access_token": eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDY4NDMzNTAsIm5iZiI
+                6MTYwNjg0MzM1MCwianRpIjoiZDM1NjBiYzEtYWI3My00YTc4LTgyNTktZjVlNmIxMjRkYjFhIiwiZXh
+                wIjoxNjA2ODQ0MjUwLCJpZGVudGl0eSI6MywiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.qHs
+                bro3YlaTw0a62qHurkv67e2K2mtOGRQAN_wfhUx8
+        }
+
+
+    - Now, we'll get the user details again, this time passing in the access token in the 
+        'Authorization' HTTP header, prepended with 'Bearer'.
+
+        $ http GET :5000/users/James Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ
+        9.eyJpYXQiOjE2MDY4NDMzNTAsIm5iZiI6MTYwNjg0MzM1MCwianRpIjoiZDM1NjBiYzEtYWI3My00YTc4LTgy
+        NTktZjVlNmIxMjRkYjFhIiwiZXhwIjoxNjA2ODQ0MjUwLCJpZGVudGl0eSI6MywiZnJlc2giOmZhbHNlLCJ0eX
+        BlIjoiYWNjZXNzIn0.qHsbro3YlaTw0a62qHurkv67e2K2mtOGRQAN_wfhUx8"
+
+      And, we get the email address this time:
+
+        {
+            "email": "james@gmail.com",
+            "id": 3,
+            "username": "James"
+        }
