@@ -145,3 +145,55 @@
     - Initialize the database.  This will create a migration repository.
 
         $ flask db init
+
+
+    - Now, create the migration for the tables.
+
+        $ flask db migrate
+
+
+    - Now, run the migration to create the tables.
+
+        $ flask db upgrade
+
+
+
+- Inserting a Row
+
+    - In the Python console, add the necessary classes.
+
+        $ flask shell
+
+        >>> from models.user import User
+        >>> from models.recipe import Recipe
+        >>> from extensions import db
+
+
+    - Now, add a sample user.
+
+        >>> user = User(username='Jack', email='jack@gmail.com', password='WkQa')
+        >>> db.session.add(user)
+        >>> db.session.commit()
+
+
+    - And add a couple recipes.
+
+        >>> pizza = Recipe(name='Cheese Pizza', description='This is a lovely cheese pizza recipe', 
+               num_of_servings=2, cook_time=30, directions='This is how you make it', user_id=user.id)
+
+        >>> pasta = Recipe(name='Tomato Pasta', description='This is a lovely tomato pasta recipe',
+                num_of_servings=3, cook_time=20, directions='This is how you make it', user_id=user.id)
+
+        >>> db.session.add(pizza)
+        >>> db.session.add(pasta)
+        >>> db.session.commit()
+
+
+    - Now, retrieve our user and get their associated recipes.
+
+        >>> user = User.query.filter_by(username='Jack').first()
+        >>> user.recipes
+
+        >>> for recipe in user.recipes:
+                print('{} recipe made by {} can serve {} people.'.format(recipe.name,
+                    recipe.user.username, recipe.num_of_servings))
