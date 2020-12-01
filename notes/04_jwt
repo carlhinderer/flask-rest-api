@@ -246,3 +246,96 @@
         from resources.user import UserListResource, UserResource, MeResource
 
         api.add_resource(MeResource, '/me')
+
+
+    - Now we can test the new endpoint:
+
+        $ http :5000/me Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ
+        9.eyJpYXQiOjE2MDY4NDMzNTAsIm5iZiI6MTYwNjg0MzM1MCwianRpIjoiZDM1NjBiYzEtYWI3My00YTc4LTgy
+        NTktZjVlNmIxMjRkYjFhIiwiZXhwIjoxNjA2ODQ0MjUwLCJpZGVudGl0eSI6MywiZnJlc2giOmZhbHNlLCJ0eX
+        BlIjoiYWNjZXNzIn0.qHsbro3YlaTw0a62qHurkv67e2K2mtOGRQAN_wfhUx8"
+
+        # Response
+        {
+            "email": "james@gmail.com",
+            "id": 3,
+            "username": "James"
+        }
+
+
+
+- Implementing Access-Controlled Recipe Management Features
+
+    - We will need a few new methods in the Recipe model so that users can manage their
+        recipes.  We will add these new methods:
+
+        'data'                 # Used to return the data in a dictionary format
+
+        'get_all_published'    # Gets all the published recipes
+
+        'get_by_id'            # This method gets the recipes by id
+
+        'save'                 # Persists data to the database
+
+        'delete'               # Deletes data from the database
+
+
+    - In the Recipe model, we add these functions.
+
+        # models/recipe.py
+        ---------------------------
+        class Recipe(db.Model):
+
+            def data(self):
+                return {
+                    'id': self.id,
+                    'name': self.name,
+                    'description': self.description,
+                    'num_of_servings': self.num_of_servings,
+                    'cook_time': self.cook_time,
+                    'directions': self.directions,
+                    'user_id': self.user_id
+                }
+        
+            @classmethod
+            def get_all_published(cls):
+                return cls.query.filter_by(is_publish=True).all()
+        
+            @classmethod
+            def get_by_id(cls, recipe_id):
+                return cls.query.filter_by(id=recipe_id).first()
+        
+            def save(self):
+                db.session.add(self)
+                db.session.commit()
+        
+            def delete(self):
+                db.session.delete(self)
+                db.session.commit()
+
+
+
+
+
+- Testing the Recipe Management Functions
+
+
+- Refresh Tokens
+
+
+- Adding a Refresh Token Function
+
+
+- Obtaining a New Access Token Using a Refresh Token
+
+
+- The User Logout Mechanism
+
+
+- Implementing the Logout Function
+
+
+- Testing the Logout Function
+
+
+- Implementing Access Control on the Publish/Unpublish Recipe Function
