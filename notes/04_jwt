@@ -1,0 +1,82 @@
+-----------------------------------------------------------------------
+|  CHAPTER 4 - AUTHENTICATION & SECURITY WITH JWT                     |
+-----------------------------------------------------------------------
+
+- 4 Parts of This Chapter
+
+    1. Authenticate the user and allow them to log in on their own profile page.
+
+    2. Complete the recipe sharing system, and allow users to publish and unpublish 
+         recipes.
+
+    3. Refresh the security token and implement the logout features.
+
+    4. Use the 'blacklist' function to force a user out.
+
+
+
+- JWT
+
+    - A Json Web Token is used to encode a user identity and sign it digitally, making it
+        an unforgeable token that identifies the user.
+
+
+    - A JWT has a header, payload, and signature.  
+
+
+    - The header contains the encryption type and algorithm.
+
+        Header
+        -------------
+        'typ': 'JWT'       # The encryption type
+        'alg': 'HS256'     # The encryption algorithm
+
+        >>> import base64
+        >>> header = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9'
+
+        >>> base64.b64decode(header)
+        b'{"typ":"JWT","alg":"HS256"}'
+
+
+    - The payload contents are arbitrary.  The developer can put whatever they want in it.
+        Note that it's base64-encoded, but not encrypted, so we shouldn't put passwords or
+        credit card numbers in it.
+
+        >>> payload = 'eyJpYXQiOjE1NjQ5ODI5OTcsIm5iZiI6MTU2NDk4Mjk5NywianRpIjoiMGIzOTVlODQtN
+                           jFjMy00NjM3LTkwMzYtZjgyZDgyYTllNzc5IiwiZXhwIjoxNTY0OTgzODk3LCJpZG
+                           VudGl0eSI6MywiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0'
+
+        >>> base64.b64decode(payload + '==')
+        b'{"iat":1564982997,"nbf":1564982997,"jti":"0b395e84-61c3-4637-9036-f82d82a9e779",
+            "exp":1564983897,"identity":3,"fresh":false,"type":"access"}'
+
+
+    - The secret part is a signature created by the HS256 algorithm.  It encrypts the encoded
+        header and payload data with the secret key which is known by the application server
+        only.
+
+
+    - The structure of the parts together looks like:
+
+        header.payload.secret
+
+
+
+- Flask-JWT-Extended
+
+    - Flask-JWT-Extended is a user authentication package
+
+        - It provides the 'create_access_token' function for making new access JWTs.
+
+        - It also provides the 'jwt_required' decorator for protecting the API endpoints.
+
+        - It also provides the 'get_jwt_identity' function to get the identity of a JWT in a
+            protected endpoint.
+
+
+    - There are key settings we will be using.
+
+        SECRET_KEY      # Key for encrypting the message and generating the signature, should
+                        #   be a complex string
+
+        JWT_ERROR_MESSAGE_KEY        # The key for the error message whenever there is an error.
