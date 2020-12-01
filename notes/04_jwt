@@ -314,6 +314,10 @@
                 db.session.commit()
 
 
+    - We also need to delete the 'recipe_list' and 'get_last_id' functionality from the Recipe
+        model that we used before we had a database.
+
+
 
 
 
