@@ -211,7 +211,7 @@
         the project root.
 
         # smilecook/utils.py
-        -------------------------------------
+        -------------------------------
         from passlib.hash import pbkdf2_sha256
 
         def hash_password(password):
@@ -219,3 +219,52 @@
              
         def check_password(password, hashed):
             return pbkdf2_sha256.verify(password, hashed)
+
+
+    - Add a new resource, 'UserListResource' in 'resources/user.py', to create new users.
+
+
+    - Add the new resource to 'app.py'.
+
+        # app.py
+        -------------------------------
+        # Remove from models.user import User
+
+        from resources.user import UserListResource
+
+        api.add_resource(UserListResource, '/users')
+
+
+
+- Testing the New User Creation
+
+    - Now we can add a new user.
+
+        $ http POST :5000/users username='john' email='john@gmail.com' password='QQwA'
+
+
+
+- Upgrading and Downgrading a Database
+
+    - Add a new attribute to the User model.
+
+        # models/user.py
+        ------------------------
+        class User(db.Model):
+            ...
+            bio = db.Column(db.String(200))
+
+
+    - Run the migrate command to create a migration to add the new column.
+
+        $ flask db migrate
+
+
+    - Run the migration.
+
+        $ flask db upgrade
+
+
+    - Later, we decide that we don't need the column after all, so we remove it.
+
+        $ flask db downgrade
