@@ -125,3 +125,19 @@
 - Implementing a User Function
 
     - First, we create a login resource at 'resources/token.py'.
+
+
+    - Next, we create a new resource 'UserResource' in the 'resources/users.py' for 
+        getting user details.  If a user is not authenticated, they can only see their
+        id and username.  If they are authenticated, they can also see their email
+        address.
+
+        # resources/user.py
+        ----------------------------
+        from flask_jwt_extended import jwt_optional, get_jwt_identity
+
+        class UserResource(Resource):
+
+            @jwt_optional
+            def get(self, username):
+                ...
