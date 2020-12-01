@@ -208,3 +208,41 @@
             "id": 3,
             "username": "James"
         }
+
+
+
+- Creating the 'me' Endpoint
+
+    - Now, we will create a special endpoint, '/users/me'.  It will allow us to get the 
+        authenticated user information back by using 'access_token'.  
+
+
+    - First, we'll create a 'get_by_id' method in the user model.
+
+        # models/user.py
+        --------------------------
+        @classmethod
+        def get_by_id(cls, id):
+            return cls.query.filter_by(id=id).first()
+
+
+    - Next, we'll create a new 'resource' class under the user model.
+
+        # resources/user.py
+        --------------------------
+        from flask_jwt_extended import jwt_optional, get_jwt_identity, jwt_required
+
+        class MeResource(Resource):
+
+            @jwt_required
+            def get(self):
+                ...
+
+
+    - Next we'll add the endpoint for the '/me' endpoint.
+
+        # app.py
+        --------------------------
+        from resources.user import UserListResource, UserResource, MeResource
+
+        api.add_resource(MeResource, '/me')
