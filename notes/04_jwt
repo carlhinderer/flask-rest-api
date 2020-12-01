@@ -80,3 +80,46 @@
                         #   be a complex string
 
         JWT_ERROR_MESSAGE_KEY        # The key for the error message whenever there is an error.
+
+
+
+- Adding Flask-JWT-Extended
+
+    - First, we'll add the Flask-JWT-Extended package.
+
+        # requirements.txt
+        --------------------------
+        Flask-JWT-Extended==3.20.0
+
+
+    - Next, add the requried keys to the Config class.
+
+        # config.py
+        --------------------------
+        SECRET_KEY = 'super-secret-key'
+        JWT_ERROR_MESSAGE_KEY = 'message'
+
+
+    - Now, add the 'JWTManager' to the extensions.
+
+        # extensions.py
+        --------------------------
+        from flask_jwt_extended import JWTManager
+
+        jwt = JWTManager()
+
+
+    - And, initialize it in 'app.py'.
+
+        # app.py
+        --------------------------
+        from extensions import db, jwt
+
+        def register_extensions(app):
+            db.init_app(app)
+            migrate = Migrate(app, db)
+            jwt.init_app(app)
+
+
+
+- Implementing a User Function
