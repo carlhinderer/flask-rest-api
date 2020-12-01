@@ -123,3 +123,5 @@
 
 
 - Implementing a User Function
+
+    - First, we create a login resource at 'resources/token.py'.
