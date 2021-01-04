@@ -92,7 +92,7 @@
         Flask-JWT-Extended==3.20.0
 
 
-    - Next, add the requried keys to the Config class.
+    - Next, add the required keys to the Config class.
 
         # config.py
         --------------------------
@@ -318,6 +318,13 @@
         model that we used before we had a database.
 
 
+    - In 'resources/recipe.py', 
+
+        # Add this import
+        from flask_jwt_extended import get_jwt_identity, jwt_required, jwt_optional
+
+        # Remove this import
+        from models.recipe import recipe_list
 
 
 

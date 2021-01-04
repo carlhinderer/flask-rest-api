@@ -47,7 +47,7 @@
 
     - We will group the CRUD actions on a recipe under 'RecipeResource'.
 
-    - We will brouop the publish and unpublish actions under 'RecipePublishResource'.
+    - We will group the publish and unpublish actions under 'RecipePublishResource'.
 
     - Implementing these resources is simple.  We just need to inherit from the
         'flask_restful.Resource' class and implement the corresponding HTTP verbs.

@@ -70,9 +70,9 @@
 
 
 
-- Creating the Config.py and extensions.py files
+- Creating the config.py and extensions.py files
 
-    - Create a 'Config.py' file in the project root.
+    - Create a 'config.py' file in the project root.
 
         # smilecook/config.py
         -----------------------------
