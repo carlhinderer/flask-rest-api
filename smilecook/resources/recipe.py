@@ -36,39 +36,48 @@ class RecipeListResource(Resource):
 
 class RecipeResource(Resource):
 
+    @jwt_optional
     def get(self, recipe_id):
-        recipe = next((recipe for recipe in recipe_list if recipe.id == recipe_id \
-            and recipe.is_publish == True), None)
+        recipe = Recipe.get_by_id(recipe_id = recipe_id)
 
         if recipe is None:
             return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
 
-        return recipe.data, HTTPStatus.OK
+        return recipe.data(), HTTPStatus.OK
 
+    @jwt_required
     def put(self, recipe_id):
-        data = request.get_json()
+        json_data = request.get_json()
 
-        recipe = next((recipe for recipe in recipe_list if recipe.id == recipe_id), None)
+        recipe = Recipe.get_by_id(recipe_id = recipe_id)
 
         if recipe is None:
             return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
 
-        recipe.name = data['name']
-        recipe.description = data['description']
-        recipe.num_of_servings = data['num_of_servings']
-        recipe.cook_time = data['cook_time']
-        recipe.directions = data['directions']
+        recipe.name = json_data['name']
+        recipe.description = json_data['description']
+        recipe.num_of_servings = json_data['num_of_servings']
+        recipe.cook_time = json_data['cook_time']
+        recipe.directions = json_data['directions']
 
-        return recipe.data, HTTPStatus.OK
+        recipe.save()
 
+        return recipe.data(), HTTPStatus.OK
+
+    @jwt_required
     def delete(self, recipe_id):
-        recipe = next((recipe for recipe in recipe_list if recipe.id == recipe_id \
-            and recipe.is_publish == True), None)
+        recipe = Recipe.get_by_id(recipe_id = recipe_id)
 
         if recipe is None:
             return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
 
-        recipe_list.remove(recipe)
+        current_user = get_jwt_identity()
+
+        if current_user != recipe.user_id:
+            return {'message': 'Access is not allowed'}, HTTPStatus.FORBIDDEN
+
+        recipe.delete()
+        
         return {}, HTTPStatus.NO_CONTENT
 
 
