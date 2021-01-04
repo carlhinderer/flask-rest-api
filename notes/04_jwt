@@ -327,6 +327,12 @@
         from models.recipe import recipe_list
 
 
+    - Now, update the 'RecipeListResource' get and post methods to use the database.
+
+
+    - Next, update the 'RecipeResource' get, put, and delete methods to use the database.
+
+
 
 - Testing the Recipe Management Functions
 
