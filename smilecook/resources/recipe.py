@@ -29,9 +29,9 @@ class RecipeListResource(Resource):
                         directions = json_data['directions'],
                         user_id = current_user)
 
-        recipe_list.append(recipe)
+        recipe.save()
 
-        return recipe.data, HTTPStatus.CREATED
+        return recipe.data(), HTTPStatus.CREATED
 
 
 class RecipeResource(Resource):
@@ -77,7 +77,7 @@ class RecipeResource(Resource):
             return {'message': 'Access is not allowed'}, HTTPStatus.FORBIDDEN
 
         recipe.delete()
-        
+
         return {}, HTTPStatus.NO_CONTENT
 
 

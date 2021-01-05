@@ -336,11 +336,101 @@
 
 - Testing the Recipe Management Functions
 
+    - We'll test our recipe creation.  We'll use the URL:
+
+        POST http://localhost:5000/recipes
+
+    We need these headers:
+
+        Authorization: Bearer TokenValue
+        Content-Type: application/json
+
+      We send this JSON:
+
+        {
+            "name": "Cheese Pizza",
+            "description": "This is a lovely cheese pizza",
+            "num_of_servings": 2,
+            "cook_time": 30,
+            "directions": "This is how you make it"
+        }
+
+
+    - Now, we can test retrieving a recipe.  We'll use the URL:
+
+        GET http://localhost:5000/recipes/3
+
+
 
 - Refresh Tokens
 
+    - For the sake of security, we often set an expiration time for our tokens.  flask-jwt-extended
+        defaults this to 15 minutes.  Because a token will expire, we need a function to refresh
+        it without putting in their credentials again.
+
+
+    - A flask-jwt-extended refresh token is a long-lived token that can be used to generate new
+        access tokens.  Note that a refresh token cannot itself be used as an access token.
+        The 'jwt_required' and 'jwt_optional' decorators need an access token.
+
+
+    - These are the refresh-token related functions:
+
+        create_access_token
+          Creates a new access token
+
+        create_refresh_token
+          Creates a refresh token
+
+        jwt_refresh_token_required
+          Specifies that the refresh token is required
+
+        get_jwt_identity
+          Gets the user that holds the current access token
+
+
+    - We will add a 'fresh' attribute to our token.  It will only be set to True when the user
+        first gets the token.  When they refresh it, 'fresh' will be set to False.
+
+      This will allow users to avoid putting in their credentials over and over.  However, for
+        some sensitive functions, like a password change, they will have to re-enter it.
+
+
 
 - Adding a Refresh Token Function
+
+    - In 'resources/token.py' import the necessary functions.
+
+        from flask_jwt_extended import (    
+            create_access_token,
+            create_refresh_token,
+            jwt_refresh_token_required,
+            get_jwt_identity
+        )
+
+
+    - Modify the 'post' method to generate an access token and a refresh token, and return
+        them both at login.
+
+
+    - Add a 'RefreshResource' class to 'token.py'.
+
+        class RefreshResource(Resource):
+
+            @jwt_refresh_token_required
+            def post(self):
+                current_user = get_jwt_identity()
+                access_token = create_access_token(identity=current_user, fresh=False)
+                return {access_token: access_token}, HTTPStatus.OK
+
+
+    - Finally, we add the route for 'RefreshResource'.
+
+        from resources.token import TokenResource, RefreshResource
+
+        def register_resources(app):
+            api.add_resource(RefreshResource, '/refresh')
+
 
 
 - Obtaining a New Access Token Using a Refresh Token
