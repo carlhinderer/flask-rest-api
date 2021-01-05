@@ -435,11 +435,99 @@
 
 - Obtaining a New Access Token Using a Refresh Token
 
+    - Now, we'll use Postman to get access and refresh tokens, then obtain a new token by
+        using the refresh token.
+
+      First, we'll send a POST request to /token to get the tokens.
+
+        POST http://localhost:5000/token
+
+        Body:
+
+        {    
+            "email": "james@gmail.com",
+            "password": "WkQad19"
+        }
+
+
+    - We got a refresh token and access token back.  They are the same.  Next, we'll refresh the
+        token.  We'll add an 'Authorization' header with the token and send this command:
+
+        POST http://localhost:5000/refresh
+
+
 
 - The User Logout Mechanism
 
+    - The flask-jwt-extended package supports the logout function.  It works by putting the
+        user's token into a blacklist when the user is logged out.
+
+      With the blacklist in place, the application can use the 'token_in_blacklist_loader' to
+        verify whether the user has logged out or not.
+
+
 
 - Implementing the Logout Function
+
+    - We will declare a 'blacklist' to store logged out tokens.  We will check whether the access 
+        token is still valid using the blacklist.
+
+      First, we'll import the 'jwt_required' and 'get_raw_jwt' into 'resources/token.py'.
+
+        from flask_jwt_extended import (
+            create_access_token,
+            create_refresh_token,
+            jwt_refresh_token_required,
+            get_jwt_identity,
+            jwt_required,
+            get_raw_jwt)
+
+
+    - Also in 'resources/token.py', create the blacklist.
+
+        black_list = set()
+
+      And, create the 'RevokeResource' class with a post method.  
+
+        class RevokeResource(Resource):
+
+            @jwt_required
+            def post(self):
+                jti = get_raw_jwt()['jti']
+                black_list.add(jti)
+                return {'message': 'Successfully logged out'}, HTTPStatus.OK
+
+
+    - Add these lines to 'config.py', which enables the blacklist feature and tells the 
+        application to check both the access and refresh tokens.
+
+        class Config:
+            ...
+            JWT_BLACKLIST_ENABLED = True
+            JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+
+
+    - Next, import 'RevokeResource' and 'black_list' into 'app.py'.
+
+        from resources.token import TokenResource, RefreshResource, RevokeResource, black_list
+
+      Add the 'check_if_token_in_blacklist' method to check whether the token is in the blacklist.
+
+        def register_extensions(app):
+            db.app = app
+            db.init_app(app)
+            migrate = Migrate(app, db)
+            jwt.init_app(app)
+
+            @jwt.token_in_blacklist_loader
+            def check_if_token_in_blacklist(decrypted_token):
+                jti = decrypted_token['jti']
+                return jti in black_list
+
+      Also, add the route for the logout.
+
+        api.add_resource(RevokeResource, '/revoke')
+
 
 
 - Testing the Logout Function
