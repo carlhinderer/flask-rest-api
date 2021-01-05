@@ -403,14 +403,93 @@
 
 - Searching for Authors and Unpublished Recipes
 
+    - So that people can search by author, we will add a new endpoint.  We will also use the
+        same endpoint to allow authors to search for their own published or unpublished recipes.
+
+
 
 - Using the webargs Package to Parse the Request Arguments
+
+    - We can use the 'webargs' package to parse arguments in the query string.  For our new
+        endpoint, we will pass in a 'visibility' argument in the query string.  For example,
+
+        http://localhost:5000/user/{username}/recipes?visibility=private
+
+      The visibility argument can have values of 'public', 'private', or 'all'.
+
+
+    - A user can only retrieve 'private' recipes if they are logged in and are the owner.
+
 
 
 - Implementing Access Control on Recipes
 
+    - The user will pass in the 'visibility' argument in the query string.  We'll add this
+        method to the recipe model in 'models/recipe.py'.
+
+        @classmethod
+        def get_all_by_user(cls, user_id, visibility='public'):
+            if visibility == 'public':
+                return cls.query.filter_by(user_id=user_id, is_publish=True).all()
+            elif visibility == 'private':
+                return cls.query.filter_by(user_id=user_id, is_publish=False).all()
+            else:
+                return cls.query.filter_by(user_id=user_id).all()
+
+
+    - Add the 'webargs' package:
+
+        webargs==5.4.0
+
+
+    - Import the necessary modules into 'resources/user.py'.
+
+        from webargs import fields
+        from webargs.flaskparser import use_kwargs
+
+        from models.recipe import Recipe
+        from models.user import User
+
+        from schemas.recipe import RecipeSchema
+        from schemas.user import UserSchema
+
+      Then, we declare the 'recipe_list_schema' variable.
+
+        recipe_list_schema = RecipeSchema(many=True)
+
+
+    - Next, we create the 'UserRecipeListResource' class.  This is used for getting the recipes
+        under a specific user.
+
+        class UserRecipeListResource(Resource):
+
+            @jwt_optional
+            @use_kwargs({'visibility': fields.Str(missing='public')})
+            def get(self, username, visibility):
+                ...
+
+
+    - Now, let's import the new resource in 'app.py':
+
+        from resources.user import UserListResource, UserResource, MeResource, UserRecipeListResource
+
+      And add the new route:
+
+        api.add_resource(UserRecipeListResource, '/users/<string:username>/recipes')
+
+
 
 - Retrieving Recipes from a Specific Author
+
+    - First, without logging in, get all the recipes for a specific user:
+
+        GET http://localhost:5000/users/James/recipes
+
+      We'll see that we get all of the user's published recipes back.
+
+
+    - Now, set 'visibility' to 'all', still without logging in, and we should still see only
+        the publihsed recipes.
 
 
 - Serializing the recipe Object Using marshmallow
