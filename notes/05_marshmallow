@@ -118,6 +118,63 @@
                 return hash_password(value)
 
 
+    - Next, we'll add the schema to 'resources/user.py'.  We'll also have a public schema
+        that omit's the user's email address.  
+
+      When a user accesses its own /users/<username> endpoint, they get their id, username, and 
+        email.  When a users is not authenticated or accesses someone else's /users/<username>, the 
+        email address is hidden.
+
+        from schemas.user import UserSchema
+
+        user_schema = UserSchema()
+        user_public_schema = UserSchema(exclude=('email', ))
+
+
+    - We modify the 'UserListResource' post method to validate the data in the user's request.
+
+        class UserListResource(Resource):
+
+            def post(self):
+                json_data = request.get_json()
+                data, errors = user_schema.load(data=json_data)
+
+                if errors:
+                    return {'message': 'Validation errors', 'errors': errors}, HTTPStatus.BAD_REQUEST
+
+                if User.get_by_username(data.get('username')):
+                    return {'message': 'username already used'}, HTTPStatus.BAD_REQUEST
+
+                if User.get_by_email(data.get('email')):
+                    return {'message': 'email already used'}, HTTPStatus.BAD_REQUEST
+
+                user = User(**data)
+                user.save()
+
+                return user_schema.dump(user).data, HTTPStatus.CREATED
+
+
+    - Next, we'll modify the 'UserResource' get method for retrieving a user's data.
+
+        class UserResource(Resource):
+
+            @jwt_optional
+            def get(self, username):
+                user = User.get_by_username(username=username)
+
+                if user is None:
+                    return {'message': 'user not found'}, HTTPStatus.NOT_FOUND
+
+                current_user = get_jwt_identity()
+
+                if current_user == user.id:
+                    data = user_schema.dump(user).data
+                else:
+                    data = user_public_schema.dump(user).data
+
+                return data, HTTPStatus.OK
+                
+
 
 - Testing the User Endpoint Before and After Authentication
 
