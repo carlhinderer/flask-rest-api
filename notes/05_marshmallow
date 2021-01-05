@@ -331,11 +331,74 @@
 
 - Testing the Recipe API
 
+    - First, log in to get a token.  Then, create a new recipe.
+
+        POST http://localhost:5000/recipes
+
+      We can use this message body:
+
+        {
+            "name": "Blueberry Smoothie",
+            "description": "This is a lovely Blueberry Smoothie",
+            "num_of_servings": 2,
+            "cook_time": 10,
+            "directions": "This is how you make it"
+        }
+
+
+    - Then, we can publish the recipe (which was given id=8).
+
+        PUT http://localhost:5000/recipes/8/publish
+
+
+    - Finally, get all the published recipes.
+
+        GET http://localhost:5000/recipes
+
+
 
 - The PATCH Method
 
+    - We have been using PUT for data updates.  But PUT is actually used for replacing data,
+        not updating it.
+
+      For example, PUT /items/1 will replace everything in /items/1 if it exists.  Otherwise,
+        a new item will be created.  PUT must contain all attribute data for the item.
+
+
+    - If you only want to update one attribute of the item, sending all the attributes over
+        is wasteful.  In that case, we can use the PATCH methods to do a partial update.
+
+
 
 - Using the PATCH Method to Update the Recipe
+
+    - Lets add a patch method to the 'RecipeResource', which replaces our put method.
+
+        @jwt_required
+        def patch(self, recipe_id):
+            json_data = request.get_json()
+            data, errors = recipe_schema.load(data=json_data, partial=('name',))
+            ...
+
+
+    - Note that we use 'partial=('name',)' since the original name was the required field in the
+        schema.  The 'partial' indicates that we only want to update a single attribute, and we
+        specify that the 'name' attribute is optional so that no error will occur even though
+        we don't pass in the attribute.
+
+
+    - To test this, we will use
+
+        PATCH http://localhost:5000/recipes/8
+
+      With the body:
+
+        {
+            "num_of_servings": 4,
+            "cook_time": 20
+        }
+
 
 
 - Searching for Authors and Unpublished Recipes

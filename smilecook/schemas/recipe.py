@@ -36,4 +36,4 @@ class RecipeSchema(Schema):
         if value < 1:
             raise ValidationError('Cook time must be greater than 0.')
         if value > 300:
-            raise ValidationError('Cook time must not be greater than 300.'
+            raise ValidationError('Cook time must not be greater than 300.')
