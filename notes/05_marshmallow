@@ -178,11 +178,114 @@
 
 - Testing the User Endpoint Before and After Authentication
 
+    - First, we'll check the user details before being logged in.  We shouldn't see the user's
+        email address.
+
+        GET http://localhost:5000/users/James
+
+
+    - Now, log in using the POST token request, and use the token to get the user details while
+        logged in.  We should now see the email.
+
+        GET http://localhost:5000/users/James
+
+
 
 - RecipeSchema Design
 
+    - The RecipeSchema should have the following attributes:
+
+        id
+          fields.Int(), dump_only=True
+
+        name
+          fields.String(), required=True
+
+        description
+          fields.String()
+
+        num_of_servings
+          fields.Int()
+
+        cook_time
+          fields.Int()
+
+        directions
+          fields.String()
+
+        is_publish
+          fields.Boolean(), dump_only=True
+
+        author
+
+        created_at
+          fields.DateTime(), dump_only=True
+
+        updated_at
+          fields.DateTime(), dump_only=True
+
+
 
 - Implementing RecipeSchema
+
+    - Here is our RecipeSchema in 'schemas/recipe.py'.
+
+        from marshmallow import Schema, fields, post_dump, validate, validates, ValidationError
+
+        class RecipeSchema(Schema):
+        
+            class Meta:
+                ordered = True
+        
+            id = fields.Integer(dump_only=True)
+            name = fields.String(required=True, validate=[validate.Length(max=100)])
+            description = fields.String(validate=[validate.Length(max=200)])
+            num_of_servings = fields.Integer(validate=validate_num_of_servings)
+            directions = fields.String(validate=[validate.Length(max=1000)])
+            is_publish = fields.Boolean(dump_only=True)
+            created_at = fields.DateTime(dump_only=True)
+            updated_at = fields.DateTime(dump_only=True)
+
+            def validate_num_of_servings(n):
+                if n < 1:
+                    raise ValidationError('Number of servings must be greater than 0.')
+                if n > 50:
+                    raise ValidationError('Number of servings must not be greater than 50.')
+
+
+    - We can pass in additional validators using the 'validate' argument.  We use this to validate
+        the length of the 'description' and 'directions' fields.
+
+
+    - There is another way to attach a custom validator to a field, which we use for 'cook_time'.
+
+        cook_time = fields.Integer
+
+        @validates('cook_time')
+        def validate_cook_time(self, value):
+            if value < 1:
+                raise ValidationError('Cook time must be greater than 0.')
+            if value > 300:
+                raise ValidationError('Cook time must not be greater than 300.')
+
+
+    - Import the user schema in 'schemas/recipe.py', since we need to display the author information
+        for a recipe.  Then, we can define the 'author' attribute.
+
+        from schemas.user import UserSchema
+
+        author = fields.Nested(UserSchema, attribute='user', dump_only=True, only=['id', 'username'])
+
+
+    - In addition, we add a '@post_dump(pass_many=True)' decorator so that further processing
+        can be done when the recipe is serialized.
+
+      A single recipe will be returned as a JSON string, while multiple recipes will be returned
+        in a list in '{'data': data}'.  This will be beneficial when we add pagination.
+
+
+
+- Using the Recipe Schema
 
 
 - Testing the Recipe API
