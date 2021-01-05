@@ -544,4 +544,12 @@
 
 - Implementing Access Control on the Publish/Unpublish Recipe Function
 
-    - 
+    - Modify the 'put' and 'delete' options in the publish/unpublish resource to restrict access
+        to only authenticated users.
+
+
+    - Ensure that only a recipe author can publish/unpublish a recipe.
+
+
+    - Test that publish/unpublish can be performed by an author and cannot be performed by a
+        non-author.
