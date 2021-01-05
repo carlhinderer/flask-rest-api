@@ -491,5 +491,29 @@
     - Now, set 'visibility' to 'all', still without logging in, and we should still see only
         the publihsed recipes.
 
+        GET http://localhost:5000/users/James/recipes?visibility=all
+
+
+    - Now, log in and send the same request.  This time, we should be able to see both 
+        published and unpublished recipes.
+
+
 
 - Serializing the recipe Object Using marshmallow
+
+    - We will use now use the marshmallow schema for serialization in the 'RecipeResource' get 
+        method.
+
+        @jwt_optional
+        def get(self, recipe_id):
+            recipe = Recipe.get_by_id(recipe_id = recipe_id)
+    
+            if recipe is None:
+                return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
+    
+            return recipe_schema.dump(recipe).data, HTTPStatus.OK
+
+
+    - Then, we can test it.
+
+        GET http://localhost:5000/recipes/8
