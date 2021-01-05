@@ -5,7 +5,7 @@ from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity, jwt_required, jwt_optional
 
 from models.recipe import Recipe
-from schemas.recipe import Recipe
+from schemas.recipe import RecipeSchema
 
 
 recipe_schema = RecipeSchema()
@@ -47,23 +47,32 @@ class RecipeResource(Resource):
         return recipe.data(), HTTPStatus.OK
 
     @jwt_required
-    def put(self, recipe_id):
+    def patch(self, recipe_id):
         json_data = request.get_json()
+        data, errors = recipe_schema.load(data=json_data, partial=('name',))
 
-        recipe = Recipe.get_by_id(recipe_id = recipe_id)
+        if errors:
+            return {'message': 'Validation errors', 'errors': errors}, HTTPStatus.BAD_REQUEST
+
+        recipe = Recipe.get_by_id(recipe_id=recipe_id)
 
         if recipe is None:
-            return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
+            return {'message': 'Recipe not found'}, HTTPStatus.NOT_FOUND
 
-        recipe.name = json_data['name']
-        recipe.description = json_data['description']
-        recipe.num_of_servings = json_data['num_of_servings']
-        recipe.cook_time = json_data['cook_time']
-        recipe.directions = json_data['directions']
+        current_user = get_jwt_identity()
+
+        if current_user != recipe.user_id:
+            return {'message': 'Access is not allowed'}, HTTPStatus.FORBIDDEN
+
+        recipe.name = data.get('name') or recipe.name
+        recipe.description = data.get('description') or recipe.description
+        recipe.num_of_servings = data.get('num_of_servings') or recipe.num_of_servings
+        recipe.cook_time = data.get('cook_time') or recipe.cook_time
+        recipe.directions = data.get('directions') or recipe.directions
 
         recipe.save()
 
-        return recipe.data(), HTTPStatus.OK
+        return recipe_schema.dump(recipe).data, HTTPStatus.OK
 
     @jwt_required
     def delete(self, recipe_id):
