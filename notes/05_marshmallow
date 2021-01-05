@@ -61,8 +61,62 @@
 
 - UserSchema Design
 
+    - For user registration, we will expect a JSON request that specifies the requested attributes.
+
+        id
+          We use 'fields.Int()' to represent an integer.  We also use 'dump_only=True', since the
+            property is only available for serialization, not deserialization.  This is because
+            'id' is auto-generated, not passed in by the user.
+
+        username
+          We use 'fields.String()' to represent a string.  We use 'required=True', since the field
+            is mandatory.
+
+        email
+          We use 'fields.Email()' to represent an email, and 'required=True'.
+
+        password
+          We use 'fields.Method()' with the 'load_password()' method.  This will only be invoked
+            during deserialization.
+
+        created_at
+          We use 'fields.DateTime()' to represent the time format, and 'dump_only=True' since it
+            will only be available for serialization.
+
+        updated_at
+          We use 'fields.DateTime()' to represent the time format, and 'dump_only=True' since it
+            will only be available for serialization.
+
+
 
 - Using marshmallow to Validate the User Data
+
+    - First, we install the marshmallow package by adding it to 'requirements.txt'.
+
+        marshmallow==2.19.5
+
+
+    - Create a 'schemas' folder in the main project.  Add a 'schemas/user.py' file for the
+        user schema.
+
+        from marshmallow import Schema, fields
+
+        from utils import hash_password
+        
+        class UserSchema(Schema):    
+            class Meta:
+                ordered = True
+        
+            id = fields.Int(dump_only=True)
+            username = fields.String(required=True)
+            email = fields.Email(required=True)
+            password = fields.Method(required=True, deserialize='load_password')
+            created_at = fields.DateTime(dump_only=True)
+            updated_at = fields.DateTime(dump_only=True)    
+        
+            def load_password(self, value):
+                return hash_password(value)
+
 
 
 - Testing the User Endpoint Before and After Authentication
