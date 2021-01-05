@@ -532,5 +532,16 @@
 
 - Testing the Logout Function
 
+    - Create a new Postman request for the logout.
+
+        POST http://localhost:5000/revoke
+
+
+    - We should see that the message that we have been successfully logged out.  If we try to
+        run the logout request again, we should see a message that our token has been revoked.
+
+
 
 - Implementing Access Control on the Publish/Unpublish Recipe Function
+
+    - 
