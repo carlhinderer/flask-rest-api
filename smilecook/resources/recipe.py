@@ -44,7 +44,7 @@ class RecipeResource(Resource):
         if recipe is None:
             return {'message': 'recipe not found'}, HTTPStatus.NOT_FOUND
 
-        return recipe.data(), HTTPStatus.OK
+        return recipe_schema.dump(recipe).data, HTTPStatus.OK
 
     @jwt_required
     def patch(self, recipe_id):
