@@ -1,0 +1,98 @@
+-----------------------------------------------------------------------
+|  CHAPTER 5 - OBJECT SERIALIZATION WITH MARSHMALLOW                  |
+-----------------------------------------------------------------------
+
+- marshmallow
+
+    - marshmallow is a package for serialization and deserialization in Python.  It also 
+        provides validation features.
+
+
+    - It allows developers to define schemas, which can be used to represent a field in various
+        ways, and automatically perform validation during deserialization.
+
+
+
+- A Simple Schema
+
+    - We will use the 'Schema' class from marshmallow to specify the fields for the objects we 
+        want to serialize/deserialize.  For instance, here is a very simple schema:
+
+        from marshmallow import Schema, fields
+
+        class SimpleSchema(Schema):
+
+            id = fields.Int()
+            username = fields.String(required=True)
+
+
+    - If the username is not included in a request, a 400 Bad Request response will be returned
+        with a 'Validation errors' message.
+
+        {
+            "message": "Validation errors",
+            "errors": {
+                "username": [
+                    "Missing data for the required field."
+                ]
+            }
+        }
+
+
+
+- Customizing Deserialization Methods
+
+    - We can also customize the way we want to deserialize certain fields.  We can do this 
+        by using 'Method' fields in marshmallow.  A 'Method' field receives an optional
+        'deserialize' argument, which defines how the field should be deserialized.
+
+
+    - For instance, we can define a custom method to deserialize the password field.
+
+        class SimpleSchema(Schema):
+            id = fields.Int()
+            username = fields.String(required=True)
+            password = fields.Method(required=True, deserialize='load_password')    
+
+            def load_password(self, value):
+                return hash_password(value)
+
+
+
+- UserSchema Design
+
+
+- Using marshmallow to Validate the User Data
+
+
+- Testing the User Endpoint Before and After Authentication
+
+
+- RecipeSchema Design
+
+
+- Implementing RecipeSchema
+
+
+- Testing the Recipe API
+
+
+- The PATCH Method
+
+
+- Using the PATCH Method to Update the Recipe
+
+
+- Searching for Authors and Unpublished Recipes
+
+
+- Using the webargs Package to Parse the Request Arguments
+
+
+- Implementing Access Control on Recipes
+
+
+- Retrieving Recipes from a Specific Author
+
+
+- Serializing the recipe Object Using marshmallow
