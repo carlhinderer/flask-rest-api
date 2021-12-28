@@ -8,7 +8,7 @@ from models.user import User
 
 from resources.recipe import (RecipeListResource, RecipeResource, 
     RecipePublishResource)
-from resources.token import TokenResource
+from resources.token import RefreshResource, TokenResource
 from resources.user import MeResource, UserListResource, UserResource
 
 
@@ -36,6 +36,7 @@ def register_resources(app):
     api.add_resource(UserResource, '/users/<string:username>')
 
     api.add_resource(TokenResource, '/token')
+    api.add_resource(RefreshResource, '/refresh')
 
     api.add_resource(MeResource, '/me')
 
