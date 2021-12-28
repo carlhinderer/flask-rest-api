@@ -1,5 +1,6 @@
 from extensions import db
 
+
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -28,3 +29,4 @@ class User(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
