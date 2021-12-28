@@ -8,7 +8,7 @@ from models.user import User
 
 from resources.recipe import (RecipeListResource, RecipeResource, 
     RecipePublishResource)
-from resources.token import RefreshResource, TokenResource
+from resources.token import black_list, RefreshResource, RevokeResource, TokenResource
 from resources.user import MeResource, UserListResource, UserResource
 
 
@@ -25,6 +25,11 @@ def register_extensions(app):
     migrate = Migrate(app, db)
     jwt.init_app(app)
 
+    @jwt.token_in_blacklist_loader
+    def check_if_token_in_blacklist(decrypted_token):
+        jti = decrypted_token['jti']
+        return jti in black_list
+
 def register_resources(app):
     api = Api(app)
 
@@ -37,6 +42,7 @@ def register_resources(app):
 
     api.add_resource(TokenResource, '/token')
     api.add_resource(RefreshResource, '/refresh')
+    api.add_resource(RevokeResource, '/revoke')
 
     api.add_resource(MeResource, '/me')
 
