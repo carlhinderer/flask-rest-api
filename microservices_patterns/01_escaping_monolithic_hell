@@ -1,0 +1,88 @@
+------------------------------------------------------------------------------------
+| CHAPTER 1 - ESCAPING MONOLITHIC HELL                                             |
+------------------------------------------------------------------------------------
+
+- Monolithic = Hexagonal Architecture
+
+
+
+- Benefits of Monoliths
+
+    1. Simple to develop
+    2. Easy to make radical changes
+    3. Straightforward to test
+    4. Straightforward to deploy
+    5. Easy to scale (just run multiple instances behind a load balancer)
+
+
+
+- Downsides of Monoliths
+
+    1. Complexity intimidates developers
+    2. Development is slow
+    3. Path from commit to deployment is long and arduous
+    4. Scaling is difficult
+    5. Delivering a reliable monolith is challenging
+    6. Locked into technology stack
+
+
+
+- Scale Cube
+
+    X-Axis = Load balance requests across multiple instances
+    Y-Axis = Functional decomposition (ie with microservices)
+    Z-Axis = Route requests based on some attribute of the request (ie user_id)
+
+
+
+- Microservices vs SOA
+
+    SOA = Smart pipes like ESBs
+        = Global data model and shared DBs
+        = Larger monolithic applications
+
+    Microservces = Dumb pipes like message brokers
+                 = Separate DB per service
+                 = Smaller services
+
+
+
+- Benefits of Microservices
+
+    - Continuous delivery and deployment
+    - Services are small and easily maintained
+    - Services are independently deployable
+    - Services are independently scalable
+    - More autonomous teams
+    - Easier to adopt new technologies
+    - Better fault isolation
+
+
+
+- Drawbacks of Microservices
+
+    - Finding the right set of services is challenging
+    - Distributed systems are complex.  Developing, testing, and deploying them is complex.
+    - Deploying features that span multiple services requires careful coordination
+    - Deciding when to adopt microservices is difficult
+
+
+
+- Relationships of Related Patterns
+
+    - Predecessor = a pattern that motivates the need for the new pattern
+    - Successor = a pattern that solves the issue introduced by this pattern
+    - Alternative = a pattern that provides alternative solutions to this pattern
+    - Generalization = a general solution to a problem
+    - Specialization = a specialized form of a particular pattern
+
+
+
+- Patterns for Designing Observable Services
+
+    - Health Check API
+    - Log aggregation
+    - Distributed tracing
+    - Exception tracking
+    - Application metrics
+    - Audit logging
