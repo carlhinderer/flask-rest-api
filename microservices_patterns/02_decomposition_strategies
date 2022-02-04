@@ -1,0 +1,242 @@
+------------------------------------------------------------------------------------
+| CHAPTER 2 - DECOMPOSITION STRATEGIES                                             |
+------------------------------------------------------------------------------------
+
+- Layered Architecture Style
+
+    - Presentation Layer
+      Business Logic Layer
+      Persistence Layer
+
+    - Each layer depends only on the layer below it
+
+    - Single presentation layer makes it hard to handle diverse clients
+    - Single persistence layer makes it had to use multiple data stores
+    - Business logic depends on pesistence layer
+
+
+
+- Hexagonal Architecture Style
+
+    - Business logic at the center
+
+    - One or more inbound adapters to handle incoming requests by invoking business logic
+        (ie an MVC controller)
+
+    - One or more outbound adapters invoked by business logic to call external applications
+        (ie a ORM to access a DB, a call to a remote service, publish an event)
+
+    - The business logic doesn't depend on the presentation or data access logic.  They 
+        depend on it.
+
+
+
+- Monolithic Architecture
+
+    - Structure the application as a single executable/deployable component
+
+
+
+- Microservices Architecture
+
+    - Set of multiple executables / deployables
+
+    - Loosely coupled, independently deployables services
+
+    - Services often correspond to business capabilities
+
+    - Loose coupling means all communication occurs via API calls, not shared DBs
+
+    - Shared libraries should be used only for functionality that is unlikely to change, and
+        should not introduce coupling.
+
+
+
+- Defining a Microservices Architecture for an Application
+
+    - 3-Step Process for Defining Architecture
+
+        1. Identify system operations
+        2. Identify services
+        3. Define service APIs and collaborations
+
+
+
+- Identifying System Operations
+
+    - Typically, nouns in user stories (ie Order, User, Restaurant) map to services and verbs in
+        user stories(ie create_order, accept_order) map to system operations.
+
+    - A system operations can create, update, or delete domain objects.  It can also create or
+        destroy relationships between them.
+
+
+
+- Sample Decomposition into Classes
+
+    Consumer — A consumer who places orders.
+  Order — An order placed by a consumer. It describes the order and tracks its status.
+  OrderLineItem — A line item of an Order.
+  DeliveryInfo — The time and place to deliver an order.
+  Restaurant — A restaurant that prepares orders for delivery to consumers.
+  MenuItem — An item on the restaurant’s menu.
+  Courier — Delivers orders to consumers. Tracks the availability and their current location.
+  Address — The address of a Consumer or a Restaurant.
+  Location — The latitude and longitude of a Courier.
+
+
+
+- Defining System Operations
+
+    - For our purposes, we'll consider 2 kinds of system operations.  'Commands' are operations
+        that create/update/delete data.  'Queries' are read-only operations.
+
+
+    - Here is a sample set of commands:
+
+        Actor        Story                          Command
+        --------------------------------------------------------------------
+        Consumer     Create Order                   create_order
+
+        Restaurant   Accept Order                   accept_order
+        Restaurant   Order Ready for Pickup         note_order_ready_for_pickup
+
+        Courier      Update Location                note_updated_location
+        Courier      Delivery Picked up             note_delivery_picked_up
+        Courier      Delivery Delivered             note_delivery_delivered
+
+
+    - Here are sample queries:
+
+        find_available_restaurants(delivery_address, delivery_time)
+        find_restaurant_menu(id)
+
+
+
+- Decomposing Into Services by Business Capability
+
+    - A business capability is something a business does to generate value.  An organization's
+        business capabilities are identified by analyzing the organization's purpose, 
+        structure, and business processes.
+
+
+    - Sample Business Capabilities
+
+        1. Supplier Management
+            - Courier management
+            - Restaurant information management
+
+        2. Consumer Management
+
+        3. Order Taking and Fulfillment
+            - Order management
+            - Restaurant order management
+            - Logistics
+            - Courier availability management
+            - Delivery management
+
+        4. Accounting
+            - Consumer accounting
+            - Restaurant accounting
+            - Courier accounting
+
+
+    - Sample Service Decomposition
+
+        1. Courier Service
+        2. Restaurant Service
+        3. Consumer Service
+        4. Order Service
+        5. Kitchen Service
+        6. Delivery Service
+        7. Accounting Service
+
+
+
+- Decomposing Into Services by Subdomain
+
+    - DDD is an approach for building software centered on the development of an object-oriented
+        domain model.
+
+
+    - DDD creates a separate domain model for each 'subdomain'.  The set of services ends up 
+        looking very similar to the business capabilities (ie order taking, order management). 
+
+
+    - DDD calls the scope of a domain model a 'bounded context'.  Each bounded context is its
+        own service or set of services.
+
+
+
+- Decomposition Guidelines
+
+    (Note that these are 2 of 11 of Bob Martin's principles.)
+
+
+    - Single Responsibility Principle 
+        = A class should only have one reason to change.
+
+
+    - Common Closure Principle
+        = If 2 classes always have to change in lockstep, they belong in the same package.
+
+
+
+- Decomposition Obstacles
+
+    - Network Latency
+        = Might need to batch API calls or combine services
+
+
+    - Synchronous IPC reduces availability
+        = For instance, the simplest way for 'create_order' to work is for the Order Service
+            to make REST calls to the other services.  However, this approach will fail if
+            any of the services is down.  Messaging might be a better approach.
+
+
+    - Maintaining Data Consistency Across Services
+        = Some operations need to update data in multiple services.  2PC distributed transactions
+            are impractical, so we must use sagas to do this.
+
+
+    - Obtaining a Consistent View of the Data
+        = Even though each service's data is consistent, you can't obtain a globally consistent
+            view of the data.  If you need some group of data to be globally consistent, it
+            has to reside in the same service.
+
+
+    - God Classes Prevent Decomposition
+        = Most applications have at least one gigantic class with way too much functionality,
+            and breaking it up seems impossible.  The solution is to treat each service as a
+            separate subdomain with its own version of the offending class.
+
+
+
+- Defining Service APIs
+
+    - There are 2 reasons for a service API operation: either the operation is called by external
+        clients or only by other internal services.
+
+
+    - Sample Breakdown of Service APIs
+
+        [Called by external clients]
+        Consumer Service
+          + create_consumer
+
+        Order Service
+          + create_order
+
+        Restaurant Service
+          + find_available_restaurants
+
+
+        [Called by other services]
+        Kitchen Service
+          + accept_order
+        + note_order_ready_for_pickup
+
+        Delivery Service  
+          + note_updated_location
+        + note_delivery_picked_up
+        + note_delivery_delivered
