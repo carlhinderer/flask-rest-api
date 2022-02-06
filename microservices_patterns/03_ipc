@@ -1,0 +1,224 @@
+------------------------------------------------------------------------------------
+| CHAPTER 3 - IPC IN A MICROSERVICE ARCHITECTURE                                   |
+------------------------------------------------------------------------------------
+
+- Service Interaction Styles
+
+    - One-to-One or One-to-Many
+
+        One-to-One = Each client request is processed by exactly one service
+        One-to-Many = Each request is processed by multiple services
+
+
+    - Synchronous or Asynchronous
+
+        Synchronous = Client expects timely response and may block while it waits
+        Asynchronous = Client doesn't block, and the response isn't necessarily sent immediately
+
+
+    - One-to-One and Synchronous
+
+        Request/response
+
+
+    - One-to-One and Asynchronous
+
+        Asynchronous request/response
+        One-way notifications
+
+
+    - One-to-Many and Asynchronous
+
+        Publish/subscribe
+        Publish/async responses
+
+
+
+- One-to-One Interaction Types
+
+    - Request/response
+
+        - A service client makes a request to a service and waits for a response
+        - Client expects timely response, and may block while waiting
+        - Generally results in tightly coupled services
+
+
+    - Asynchronous request/response
+
+        - A client sends a request to a service, which replies asynchronously
+        - Client doesn't block, because response might not come for a long time
+
+
+    - One-way notifications
+
+        - Service client sends a request to a service, but no response is expected or sent
+
+
+
+- One-to-Many Interaction Types
+
+    - Publish/subscribe
+
+        - Client pushes a notification message
+        - Message is consumed by 0 or more interested services
+
+
+    - Publish/async responses
+
+        - Client publishes a request message
+        - Client then waits a certain amount of time for responses from interested services
+
+
+
+- Evolving APIs
+
+    - Modern applications are never usually down for maintenance.  Rolling upgrades, where
+        multiple versions of your service are running at the same time, should be expected.
+
+
+    - Semantic Versioning
+
+        MAJOR.MINOR.PATCH
+
+        Major = Incompatible API change
+        Minor = Backwards-compatible API changes
+        Patch = Backwards-compatible bug fix
+
+
+    - Backwards Compatibility
+
+        Backwards-compatible changes are additive to an API:
+
+          1. Adding optional attributes to a request
+          2. Adding attributes to a response
+          3. Adding new operations
+
+
+    - Robustness Principle
+
+        Be conservative in what you do, and be liberal in what you accept from others.
+
+
+    - Versioning APIs for Breaking Changes
+
+        - If you have a REST API, you can put the version in the URL itself.
+
+            /v1/orders
+            /v2/orders
+
+        - Another option is to use HTTP's content negotiation mechanism by specifying the
+            version number in the MIME type.
+
+            GET /orders/xyz HTTP/1.1
+            Accept: application/vnd.example.resource+json; version=1
+            ...
+
+
+
+- Message Formats
+
+    - Text-Based Message Formats
+
+        - XML (can specify a schema with XML schema)
+        - JSON (can specify a schema using JSON Schema)
+        - Widely supported, but verbose
+
+
+    - Binary Message Formats
+
+        - Protocol Buffers (uses tagged fields for schema)
+        - Avro (both sides need to know versioned schema)
+
+
+
+- RPI Implementation - RESTful Services
+
+    - HTTP, resources and actions, data is usually JSON but can also by XML
+
+
+    - REST Maturity Model
+        Level 0 = Make HTTP POST requests to a single endpoint and put operation in params
+        Level 1 = Make HTTP POST requests to actions on resources
+        Level 2 = Use the HTTP verbs (allows you to use HTTP infrastructure such as caching GETs)
+        Level 3 = Use HATEAOS, put links to actions on resource in response
+
+
+    - Unlike legacy technologies like SOAP and CORBA, REST was not designed with an IDL for 
+        creating API specifications.  If you want a REST IDL, OpenAPI is a popular choice.
+
+
+    - One problem with REST is the need to make a lot of REST requests if you need associated data,
+        which can lead to excessive latency.  One solution is to put a query param in the URL that
+        states which data you want to side load.
+
+        GET /orders/order-id-1345?expand=consumer
+
+      This issue has led to the rise of alternative API technologies such as GraphQL and Netlfix
+        Falcor, which are designed to support efficient data fetching.
+
+
+    - Another common complaint with REST is that it can become awkward trying to map your entire
+        application onto the HTTP verbs.  For instance, what if you need 2 different types of updates
+        on the same resource?  Some people have migrated to gRPC to avoid this problem.
+
+
+    - Benefits:
+
+        1. Simple and familiar
+        2. Easy to test using standard tools like curl and postman
+        3. Directly supports request/response type communication
+        4. HTTP is firewall friendly
+        5. Doesn't require an intermediate broker
+
+
+    - Drawbacks:
+
+        1. Only supports request/response style
+        2. Reduced availability, client and server must both be up for duration of exchange
+        3. Clients must know locations of service instances
+        4. Fetching multiple resources in a single request is challenging
+        5. Can be difficult to map to HTTP verbs
+
+
+
+- RPI Implementation - gRPC
+
+    - gRPC is a binary, message-based protocol.  gRPC APIs are defined using a Protocol Buffers
+        based IDL.  Then, you use the Protocol Buffers compiler to generate client-side and
+        server-side stubs.
+
+
+    - Clients and servers exchange messages using HTTP/2.
+
+
+    - Protocol Buffers is a tagged format.  Each field of a Protocol Buffers message is numbered
+        and has a type code.
+
+
+    - Benefits
+
+        1. Straightforward to design an API
+        2. Efficient, compact IPC mechanism, especially for large messages
+        3. Bidirectional streaming enables both RPI and messaging styles of communication
+        4. Language-neutral
+
+
+    - Drawbacks
+
+        1. Not as simple for Javascript clients to consume
+        2. Older firewalls might not support HTTP/2
+
+
+
+- Handling Partial Failure Using the Circuit Breaker Pattern
+
+    - A circuit breaker pattern uses an RPI proxy that immediately rejects invocations for a 
+        timeout period after a specific threshold of consecutive failures is reached.
+
+
+    - In a microservices environment, it is essential to design services with the possibility of
+        partial failure in mind.  You must always do 2 things:
+
+        1. Design RPI service proxies to handle unresponsive remote services
+        2. You need to decide how to recover from a failed remote service
+        
