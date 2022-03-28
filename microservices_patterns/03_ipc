@@ -221,4 +221,40 @@
 
         1. Design RPI service proxies to handle unresponsive remote services
         2. You need to decide how to recover from a failed remote service
-        
+
+
+    - Mechanisms for protecting against cascading failures in RPI proxies:
+
+        1. Network timeouts
+        2. Limiting the number of requests from a single client
+        3. Circuit breaker pattern = automatically fail for a specified amount of time
+
+
+    - How to recover from failures depends on the needs of your application.  If the central part
+        of the application fails (ie unable to place an order), you should probably display an
+        error message in the application.  If something less important fails, you might just ignore
+        it.
+
+
+
+- Service Discovery - From Client Side
+
+    - A service instance registers itself in the service registry.  This is known as the 
+        'self registration' pattern.
+
+
+    - The client queries the service registry to get the locations of services.  This is known as
+        the 'client-side discovery' pattern.
+
+
+    - The upside to this approach is that it can combine services on multiple deployment platforms.
+        The downside is that you have to set up and manage the service registry yourself.
+
+
+
+- Service Discovery - From Service Side
+
+    - Many modern deployment platforms 
+
+
+
