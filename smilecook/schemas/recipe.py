@@ -22,7 +22,7 @@ class RecipeSchema(Schema):
     directions = fields.String(validate=[validate.Length(max=1000)])
     is_publish = fields.Boolean(dump_only=True)
 
-    author = fields.nested(UserSchema, attribute='user', dump_only=True, 
+    author = fields.Nested(UserSchema, attribute='user', dump_only=True, 
         only=['id', 'username'])
 
     created_at = fields.DateTime(dump_only=True)
@@ -36,7 +36,7 @@ class RecipeSchema(Schema):
             raise ValidationError('Cook time must not be greater than 300.')
 
     @post_dump(pass_many=True)
-        def wrap(self, data, many, **kwargs):
-            if many:
-                return {'data': data}
+    def wrap(self, data, many, **kwargs):
+        if many:
+            return {'data': data}
         return data
