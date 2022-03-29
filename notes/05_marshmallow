@@ -61,6 +61,10 @@
 
 - UserSchema Design
 
+    - Note that 'ordered = True' means that the fields will be serialized in the order in which
+        they are declared.
+
+
     - For user registration, we will expect a JSON request that specifies the requested attributes.
 
         id
@@ -282,6 +286,12 @@
 
       A single recipe will be returned as a JSON string, while multiple recipes will be returned
         in a list in '{'data': data}'.  This will be beneficial when we add pagination.
+
+        @post_dump(pass_many=True)
+        def wrap(self, data, many, **kwargs):
+            if many:
+                return {'data': data}
+        return data
 
 
 

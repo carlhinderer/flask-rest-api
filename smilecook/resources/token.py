@@ -40,7 +40,7 @@ class RefreshResource(Resource):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user, fresh=False)
 
-        return {access_token: access_token}, HTTPStatus.OK
+        return {'access_token': access_token}, HTTPStatus.OK
 
 
 class RevokeResource(Resource):
