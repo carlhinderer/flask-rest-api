@@ -9,7 +9,8 @@ from models.user import User
 from resources.recipe import (RecipeListResource, RecipeResource, 
     RecipePublishResource)
 from resources.token import black_list, RefreshResource, RevokeResource, TokenResource
-from resources.user import MeResource, UserListResource, UserResource
+from resources.user import (MeResource, UserListResource, UserResource,
+    UserRecipeListResource)
 
 
 def create_app():
@@ -39,12 +40,12 @@ def register_resources(app):
 
     api.add_resource(UserListResource, '/users')
     api.add_resource(UserResource, '/users/<string:username>')
+    api.add_resource(MeResource, '/me')
+    api.add_resource(UserRecipeListResource, '/users/<string:username>/recipes')
 
     api.add_resource(TokenResource, '/token')
     api.add_resource(RefreshResource, '/refresh')
     api.add_resource(RevokeResource, '/revoke')
-
-    api.add_resource(MeResource, '/me')
 
 
 if __name__ == '__main__':
