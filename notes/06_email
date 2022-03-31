@@ -1,0 +1,46 @@
+-----------------------------------------------------------------------
+|  CHAPTER 6 - EMAIL CONFIRMATION                                     |
+-----------------------------------------------------------------------
+
+- Mailgun
+
+    - We'll update user registration to verify a user's email when a new account is created.
+        First, we'll get started using Mailgun, a 3rd party email provider.
+
+    - We sign up and verify our account at 'www.mailgun.com'.
+
+
+
+- Using the Mailgun API to Send Emails
+
+    - We'll create a new class to make our API calls in 'mailgun.py'.
+
+        class MailgunApi:
+            API_URL = 'api.mailgun.net/v3/{}/messages'
+
+            def __init__(self, domain, api_key): ...
+
+            def send_email(self, to, subject, text, html=None): ...
+
+
+    - We'll test sending an email from the console.
+
+        >>> from mailgun import MailgunApi
+        >>> mailgun = MailgunApi(domain='sandbox111112222233333444455555.mailgun.org',
+                                 api_key='12abc-abc123-abc123')
+
+        >>> mailgun.send_email(to='smilecook.api@gmail.com',
+                               subject='Hello',
+                               text='Hello World!')
+
+
+
+- User Account Activation Workflow
+
+    - We'll add a rule that a user has to activate their account before they can access 
+        their account dashboard.
+
+    - We'll add an 'is_active' attribute to the User model.
+
+    - We'll send an activation email with a unique token that will be used to activate the
+        account.  We'll use the 'itsdangerous' package to 
