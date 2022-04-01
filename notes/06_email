@@ -38,9 +38,8 @@
 - User Account Activation Workflow
 
     - We'll add a rule that a user has to activate their account before they can access 
-        their account dashboard.
-
-    - We'll add an 'is_active' attribute to the User model.
+        their account dashboard.  We'll use the 'is_active' attribute to the User model to
+        keep track of whether the account has been verified.
 
     - We'll send an activation email with a unique token that will be used to activate the
         account.  We'll use the 'itsdangerous' package to generate those unique tokens and
@@ -48,7 +47,7 @@
 
 
 
-- Generating the Account Activation
+- Generating the Account Activation Token
 
     - First, we need to add 'itsdangerous' to 'requirements.txt'.
 
@@ -109,3 +108,66 @@
 
                 text = 'Hi, Thanks for using SmileCook! Please confirm your \
                           registration by clicking on the link: {}'.format(link)
+
+                mailgun.send_email(to=user.email,
+                                   subject=subject,
+                                   text=text)
+
+
+    - Now, we'll create a new resource, also in 'resources/user.py', for handling the
+        verifications.
+
+        class UserActivateResource(Resource):
+            def get(self, token):
+                email = verify_token(token, salt='activate')
+
+                if email is False:
+                    return {'message': 'Invalid token or token expired'}, HTTPStatus.BAD_REQUEST
+
+                user = User.get_by_email(email=email)
+                if not user:
+                    return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
+                
+                if user.is_active is True:
+                    return {'message': 'The user account is already activated'}, HTTPStatus.BAD_REQUEST
+
+                user.is_active = True
+                user.save()
+
+                return {}, HTTPStatus.NO_CONTENT
+
+
+    - We'll need to add the new resource in 'app.py'.
+
+        from resources.user import UserActivateResource
+
+        api.add_resource(UserActivateResource, '/users/activate/<string:token>')
+
+
+    - And, we'll update 'resources/token.py' to only return login tokens if the user account has
+        been verified.
+
+        class TokenResource(Resource):
+            def post(self):
+                ...
+                if user.is_active is False:
+                    return {'message': 'The user account is not activated yet'}, HTTPStatus.FORBIDDEN
+
+
+    - To test the entire flow:
+
+        1. Create a new user with the email used for Smilecook
+        2. Log in through the API, verify that you do not receive an access token
+        3. Use the email link to activate the account
+        4. Log in again and verify that you do get an access token
+
+
+
+- Using Environment Variables
+
+    - We'll use environment variables for the Mailgun configuration.
+
+        import os
+
+        mailgun = MailgunApi(domain=os.environ.get('MAILGUN_DOMAIN'),
+                             api_key=os.environ.get('MAILGUN_API_KEY'))
