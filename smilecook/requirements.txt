@@ -5,8 +5,10 @@ Flask-RESTful==0.3.7
 Flask-SQLAlchemy==2.4.0
 httpie==1.0.3
 itsdangerous==1.1.0
+Jinja2==3.0.3
 marshmallow==2.19.5
 passlib==1.7.1
 psycopg2==2.8.3
 PyJWT==1.7.1
 webargs==5.4.0
+Werkzeug==2.0.0
