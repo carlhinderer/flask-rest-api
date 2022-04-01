@@ -81,4 +81,31 @@
 
 
 
-- 
+- Sending Out the User Account Activation Email
+
+    - We'll update 'resources/user.py'.
+
+        from flask import request, url_for
+
+        from mailgun import MailgunApi
+        from utils import generate_token, verify_token
+
+        mailgun = MailgunApi(domain='sandboxabc123.mailgun.org',
+                      api_key='abc123-abc123-abc123')
+
+
+    - Then, in the same file, in the account creation after 'user.save()':
+
+        class UserListResource(Resource):
+            def post(self):
+                ...
+                user.save()
+                token = generate_token(user.email, salt='activate')
+                subject = 'Please confirm your registration.'
+
+                link = url_for('useractivateresource',
+                               token=token,
+                               _external=True)
+
+                text = 'Hi, Thanks for using SmileCook! Please confirm your \
+                          registration by clicking on the link: {}'.format(link)
