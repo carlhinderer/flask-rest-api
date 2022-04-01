@@ -171,3 +171,38 @@
 
         mailgun = MailgunApi(domain=os.environ.get('MAILGUN_DOMAIN'),
                              api_key=os.environ.get('MAILGUN_API_KEY'))
+
+
+
+- HTML Format Email
+
+    - Adding a small amount of HTML in emails is very simple.
+
+        mailgun.send_email(to=user.email,
+                           subject=subject,
+                           text=text,
+                           html='<html><body><h1>Test email</h1></body></html>')
+
+
+    - If we want to use a more complex template, we can use the Jinja2 template engine.
+        To do this, we just put our email templates in a '/templates' folder and use Flask's
+        'render_template()' method to render them.
+
+        # /templates/sample.html
+        <html>
+          <body>
+            <h1>Test Email</h1>
+          </body>
+        </html>
+
+        # Use the template
+        mailgun.send_email(to=user.email,
+                           subject=subject,
+                           text=text,
+                           html=render_template('sample.html'))
+
+
+
+- Creating the HTML Format User Account Activation Email
+
+    - 
