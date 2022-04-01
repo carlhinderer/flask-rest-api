@@ -43,4 +43,42 @@
     - We'll add an 'is_active' attribute to the User model.
 
     - We'll send an activation email with a unique token that will be used to activate the
-        account.  We'll use the 'itsdangerous' package to 
+        account.  We'll use the 'itsdangerous' package to generate those unique tokens and
+        verify they are genuine.
+
+
+
+- Generating the Account Activation
+
+    - First, we need to add 'itsdangerous' to 'requirements.txt'.
+
+        itsdangerous==1.1.0
+
+
+    - Well need the 'SECRET_KEY' defined in our 'config.py', which we already had defined for
+        creating JWTs.
+
+        class Config:
+            SECRET_KEY = 'super-secret-key'
+
+
+    - Next, we'll add the utility methods to 'utils.py' to generate and verify tokens.
+
+        from flask import current_app
+        from itsdangerous import URLSafeTimedSerializer
+
+        def generate_token(email, salt=None):
+            serializer = URLSafeTimedSerializer(current_app.config.get('SECRET_KEY'))
+            return serializer.dumps(email, salt=salt)
+
+        def verify_token(token, max_age=(30 * 60), salt=None):
+            serializer = URLSafeTimedSerializer(current_app.config.get('SECRET_KEY'))
+            try:
+                email = serializer.loads(token, max_age=max_age, salt=salt)
+            except:
+                return False
+            return email
+
+
+
+- 
