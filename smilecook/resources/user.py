@@ -1,6 +1,6 @@
 import os
 
-from flask import request, url_for
+from flask import request, url_for, render_template
 from flask_jwt_extended import get_jwt_identity, jwt_optional, jwt_required
 from flask_restful import Resource
 from http import HTTPStatus

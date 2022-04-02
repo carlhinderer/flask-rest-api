@@ -1,0 +1,10 @@
+-----------------------------------------------------------------------
+|  CHAPTER 7 - WORKING WITH IMAGES                                    |
+-----------------------------------------------------------------------
+
+- Adding the 'avatar_image' Attribute to the User Model
+
+    - We'll add an 'avatar_image' attribute to our User model so we can store the user's avatar.
+        First, we add it to the User model in 'models/user.py'.
+
+        
