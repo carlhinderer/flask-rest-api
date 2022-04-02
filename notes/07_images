@@ -7,4 +7,76 @@
     - We'll add an 'avatar_image' attribute to our User model so we can store the user's avatar.
         First, we add it to the User model in 'models/user.py'.
 
-        
+        class User(db.Model):
+            ...
+            avatar_image = db.Column(db.String(100), default=None)
+
+
+    - Now, we just need to run the migrations.
+
+        $ flask db migrate
+        $ flask db upgrade
+
+
+
+- The 'Flask-Uploads' Package
+
+    - The 'Flask-Uploads' package has tools for allowing uploads of image, document, or audio
+        data.
+
+
+    - First, we define an 'UploadSet' for the type of files we want to receive, and then we can
+        save the incoming files.
+
+        image_set = UploadSet('images', IMAGES)
+        image_set.save(image, folder=folder, name=filename)
+
+
+
+- Implementing the User Avatar Function
+
+    - We'll add 'Flask-Uploads' in 'requirements.txt'.
+
+        Flask-Uploads==0.2.1
+
+
+    - We'll import and set it up in 'extensions.py'.
+
+        from flask_uploads import UploadSet, IMAGES
+
+        image_set = UploadSet('images', IMAGES)
+
+
+    - We'll set the image destination folder in 'config.py'.
+
+        UPLOADED_IMAGES_DEST = 'static/images'
+
+
+    - Now, we'll import the required methods in 'app.py'.
+
+        from flask_uploads import configure_uploads, patch_request_class
+        from extensions import image_set
+
+        configure_uploads(app, image_set)
+
+        # This sets the maximum file upload size, none by default
+        patch_request_class(app, 10 * 1024 * 1024)
+
+
+    - Now, we'll add handling of the 'avatar_url' in 'schemas/user.py'.
+
+        from flask import url_for
+
+        class UserSchema(Schema):
+            ...
+            avatar_url = fields.Method((serialize='dump_avatar_url')
+
+            def dump_avatar_url(self, user):
+                if user.avatar_image:
+                    return url_for('static',
+                                   filename='images/avatars/{}'.format(user.avatar_image),
+                                   _external=True)
+                else:
+                    return url_for('static',
+                                   filename='images/assets/default-avatar.jpg',
+                                   _external=True)

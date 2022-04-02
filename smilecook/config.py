@@ -13,3 +13,6 @@ class Config:
     JWT_ERROR_MESSAGE_KEY = 'message'
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+
+    # Flask-Upload
+    UPLOADED_IMAGES_DEST = 'static/images'
