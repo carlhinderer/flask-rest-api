@@ -60,6 +60,7 @@
         configure_uploads(app, image_set)
 
         # This sets the maximum file upload size, none by default
+        # Note I had to remove this to get Flask-Reuploaded to work
         patch_request_class(app, 10 * 1024 * 1024)
 
 
@@ -123,3 +124,16 @@
                     avatar_path = image_set.path(folder='avatars', filename=user.avatar_image)
                     if os.path.exists(avatar_path):
                         os.remove(avatar_path)
+
+                filename = save_image(image=file, folder='avatars')
+                user.avatar_image = filename
+                user.save()
+
+                return user_avatar_schema.dump(user).data, HTTPStatus.OK
+
+
+    - And, finally we'll need to import the resource and add the route in 'app.py'.
+
+        from resources.user import UserAvatarUploadResource
+
+        api.add_resource(UserAvatarUploadResource, '/users/avatar')
