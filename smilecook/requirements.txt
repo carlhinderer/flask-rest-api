@@ -9,6 +9,7 @@ itsdangerous==1.1.0
 Jinja2==3.0.3
 marshmallow==2.19.5
 passlib==1.7.1
+Pillow==6.2.1
 psycopg2==2.8.3
 PyJWT==1.7.1
 webargs==5.4.0
