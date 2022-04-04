@@ -142,3 +142,7 @@
     4. Modify the 'UserRecipeListResource.get' method in 'resources/user.py'
 
     5. Add the '@user_kwargs' decorator for 'UserRecipeListResource.get'.
+
+
+    - Then, we just need to test the new URLs similarly to how we tested the RecipeListResource
+        pagination.
