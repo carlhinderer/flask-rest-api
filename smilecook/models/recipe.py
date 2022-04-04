@@ -1,3 +1,5 @@
+from sqlalchemy import asc, desc
+
 from extensions import db
 
 
@@ -39,3 +41,9 @@ class Recipe(db.Model):
             return cls.query.filter_by(user_id=user_id, is_publish=False).all()
         else:
             return cls.query.filter_by(user_id=user_id).all()
+
+    @classmethod
+    def get_all_published(cls, page, per_page):
+        return cls.query.filter_by(is_publish=True).
+                         order_by(desc(cls.created_at)).
+                         paginate(page=page, per_page=per_page)
