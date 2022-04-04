@@ -219,4 +219,14 @@
 
 
 
-- 
+- Optional - Implement Recipe Cover Image Upload
+
+    - If we implemented this, we would need:
+
+        1. Add the 'cover_image' attribute to 'models/recipe.py'.
+
+        2. Update the db schema.
+
+        3. Create a 'recipe_cover_schema' to show the 'cover_url' in the HTTP response.
+
+        4. Create a 'RecipeCoverUploadResource' for the recipe cover upload function.
