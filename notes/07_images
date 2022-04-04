@@ -206,3 +206,17 @@
 
             filename = compress_image(filename=filename, folder=folder)
             return filename
+
+
+
+- Testing the Image Compression
+
+    - In Postman, get an authentication token.  Then in a PUT request, select the 'Body' tab, 
+        and enter form data:
+
+        Key: avatar
+        Value: File > File for avatar picture
+
+
+
+- 
