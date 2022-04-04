@@ -18,14 +18,27 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
 
     @classmethod
+    def get_by_id(cls, recipe_id):
+        return cls.query.filter_by(id=recipe_id).first()
+
+    @classmethod
     def get_all_published(cls, page, per_page):
         return cls.query.filter_by(is_publish=True).\
                          order_by(desc(cls.created_at)).\
                          paginate(page=page, per_page=per_page)
 
     @classmethod
-    def get_by_id(cls, recipe_id):
-        return cls.query.filter_by(id=recipe_id).first()
+    def get_all_by_user(cls, user_id, page, per_page, visibility='public'):
+        if visibility == 'public':
+            filter_criteria = dict(user_id=user_id, is_publish=True)
+        elif visibility == 'private':
+            filter_criteria = dict(user_id=user_id, is_publish=False)
+        else:
+            filter_criteria = dict(user_id=user_id)
+
+        return cls.query.filter_by(**filter_criteria).\
+                         order_by(desc(cls.created_at)).\
+                         paginate(page=page, per_page=per_page)
 
     def save(self):
         db.session.add(self)
@@ -34,12 +47,3 @@ class Recipe(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
-    @classmethod
-    def get_all_by_user(cls, user_id, visibility='public'):
-        if visibility == 'public':
-            return cls.query.filter_by(user_id=user_id, is_publish=True).all()
-        elif visibility == 'private':
-            return cls.query.filter_by(user_id=user_id, is_publish=False).all()
-        else:
-            return cls.query.filter_by(user_id=user_id).all()

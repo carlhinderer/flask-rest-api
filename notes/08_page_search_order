@@ -113,3 +113,32 @@
 
     - First, we'll log in to get a token, then we'll create 8 recipes.  Then, we need to publish
         each of the recipes we just created.
+
+
+    - Next, we test that we get paginated results.
+
+        GET /recipes
+
+
+    - We can specify the number of recipes per page using a query param.
+
+        GET /recipes?per_page=2
+
+
+    - We can also move through the pages of results.
+
+        GET /recipes?per_page=2&page=2
+
+
+
+- Implementing Pagination on User-Specific Recipe Retrieval API
+
+    1. Modify the 'get_all_by_user' method in model/recipe.py
+
+    2. Import 'RecipePaginationSchema' into 'resources/user.py'
+
+    3. Declare the 'recipe_pagination_schema' attribute in 'resources/user.py'
+
+    4. Modify the 'UserRecipeListResource.get' method in 'resources/user.py'
+
+    5. Add the '@user_kwargs' decorator for 'UserRecipeListResource.get'.
