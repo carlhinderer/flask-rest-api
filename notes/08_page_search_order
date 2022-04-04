@@ -146,3 +146,36 @@
 
     - Then, we just need to test the new URLs similarly to how we tested the RecipeListResource
         pagination.
+
+
+
+- Recipe Searching
+
+    - We're going to implement simple recipe search using SQL 'LIKE' queries.  Actually, we'll use
+        'ILIKE' so that search is case-insensitive.
+
+
+    - First, we import '_or' from sqlalchemy and modify the 'get_all_published' method in 
+        'models/recipe.py'.
+
+        from sqlalchemy import or_
+
+        @classmethod
+        def get_all_published(cls, q, page, per_page):
+            keyword = '%{keyword}%'.format(keyword=q)
+
+            return cls.query.filter(or_(cls.name.ilike(keyword), cls.description.ilike(keyword)),
+                                    cls.is_publish.is_(True)).\
+                             order_by(desc(cls.created_at)).\
+                             paginate(page=page, per_page=per_page)
+
+
+    - Modify the 'RecipeListResource' in 'resources/recipe.py'.
+
+        class RecipeListResource(Resource):
+            @use_kwargs({'q': fields.Str(missing=''),
+                         'page': fields.Int(missing=1),
+                         'per_page': fields.Int(missing=20)})
+            def get(self, q, page, per_page):
+                paginated_recipes = Recipe.get_all_published(q, page, per_page)
+                return recipe_pagination_schema.dump(paginated_recipes).data, HTTPStatus.OK
