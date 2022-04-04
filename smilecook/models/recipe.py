@@ -18,8 +18,10 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
 
     @classmethod
-    def get_all_published(cls):
-        return cls.query.filter_by(is_publish=True).all()
+    def get_all_published(cls, page, per_page):
+        return cls.query.filter_by(is_publish=True).\
+                         order_by(desc(cls.created_at)).\
+                         paginate(page=page, per_page=per_page)
 
     @classmethod
     def get_by_id(cls, recipe_id):
@@ -41,9 +43,3 @@ class Recipe(db.Model):
             return cls.query.filter_by(user_id=user_id, is_publish=False).all()
         else:
             return cls.query.filter_by(user_id=user_id).all()
-
-    @classmethod
-    def get_all_published(cls, page, per_page):
-        return cls.query.filter_by(is_publish=True).
-                         order_by(desc(cls.created_at)).
-                         paginate(page=page, per_page=per_page)

@@ -79,7 +79,8 @@
             data = fields.Nested(RecipeSchema, attribute='items', many=True)
 
 
-    - Now, we'll update the Recipe model in 'models/recipe.py'.
+    - Now, we'll update the Recipe model in 'models/recipe.py' by modifying the 'get_all_published'
+        method to return paginated results.
 
         from sqlalchemy import asc, desc
 
@@ -90,4 +91,25 @@
                              paginate(page=page, per_page=per_page)
 
 
-    - 
+    - Finally, we'll make updates to 'resources/recipe.py' in order to return the paginated recipes.
+        We'll update the 'get' method to support pagination.
+
+        from webargs import fields
+        from webargs.flaskparser import use_kwargs
+
+        from schemas.recipe import RecipeSchema, RecipePaginationSchema
+
+        recipe_pagination_schema = RecipePaginationSchema()
+
+        class RecipeListResource(Resource):
+            @use_kwargs({'page': fields.Int(missing=1), 'per_page': fields.Int(missing=20)})
+            def get(self, page, per_page):
+                paginated_recipes = Recipe.get_all_published(page, per_page)
+                return recipe_pagination_schema.dump(paginated_recipes).data, HTTPStatus.OK
+
+
+
+- Testing The Pagination Functions
+
+    - First, we'll log in to get a token, then we'll create 8 recipes.  Then, we need to publish
+        each of the recipes we just created.

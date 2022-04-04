@@ -2,19 +2,23 @@ from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_optional, jwt_required
 from flask_restful import Resource
 from http import HTTPStatus
+from webargs import fields
+from webargs.flaskparser import use_kwargs
 
 from models.recipe import Recipe
-from schemas.recipe import RecipeSchema
+from schemas.recipe import RecipeSchema, RecipePaginationSchema
 
 
 recipe_schema = RecipeSchema()
 recipe_list_schema = RecipeSchema(many=True)
+recipe_pagination_schema = RecipePaginationSchema()
 
 
 class RecipeListResource(Resource):
-    def get(self):
-        recipes = Recipe.get_all_published()
-        return recipe_list_schema.dump(recipes).data, HTTPStatus.OK
+    @use_kwargs({'page': fields.Int(missing=1), 'per_page': fields.Int(missing=20)})
+    def get(self, page, per_page):
+        paginated_recipes = Recipe.get_all_published(page, per_page)
+        return recipe_pagination_schema.dump(paginated_recipes).data, HTTPStatus.OK
 
     @jwt_required
     def post(self):
