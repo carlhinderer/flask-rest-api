@@ -132,3 +132,52 @@
         from utils import clear_cache
 
         clear_cache('/recipes')
+
+
+
+- API Rate Limiting
+
+    - Sometimes, we want to set a per-user limit on how many API calls can be made in a specific
+        timeframe.  For instance, we can limit a single user to no more than 100 calls per second.
+
+
+    - HTTP Headers used for rate limiting:
+
+        X-RateLimit-Limit: Shows the rate limit of this API endpoint
+
+        X-RateLimit-Remaining: Shows the number of remaining requests allowed before
+                                 the next reset
+
+        X-RateLimit-Reset: When the rate limit will be reset (in UTC epoch time)
+
+        Retry-After: The number of seconds before the next reset
+
+
+    - When a user violates the rate limit, they will receive a '429 Too Many Requests' response.
+
+        {
+            'errors': 'Too Many Requests'
+        }
+
+
+    - We'll use the 'Flask-Limiter' extension to easily add rate-limiting functionality.  It
+        includes lots of options, including support for using Memcached or Redis.
+
+
+
+- Implementing API Rate-Limiting Functionality
+
+    - Add 'Flask-Limiter' to 'requirements.txt'.
+
+        Flask-Limiter==1.0.1
+
+
+    - Import the 'Limiter' in 'extensions.py'.
+
+        from flask_limiter import Limiter
+        from flask_limiter.util import get_remote_address
+
+        limiter = Limiter(key_func=get_remote_address)
+
+
+    - 
