@@ -180,4 +180,32 @@
         limiter = Limiter(key_func=get_remote_address)
 
 
+    - Import and initialize the limiter object in 'app.py'.
+
+        from extensions import limiter
+
+        def register_exceptions():
+            ...
+            limiter.init_app(app)
+
+
+    - In 'config.py', add the 'RATELIMIT_HEADERS_ENABLED' option.
+
+        RATELIMIT_HEADERS_ENABLED = True
+
+
+    - Now, we need to add the limiter to the 'RecipeListResource' in 'resources/recipe.py'.
+
+        from extensions import limiter
+
+        class RecipeListResource(Resource):
+            decorators = [limiter.limit('2 per minute',
+                                        methods=['GET'], 
+                                        error_message='Too Many Requests')]
+            ...
+
+
+
+- Adding a Whitelist
+
     - 

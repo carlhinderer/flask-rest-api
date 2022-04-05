@@ -20,3 +20,6 @@ class Config:
     # Flask-Caching
     CACHE_TYPE = 'simple'
     CACHE_DEFAULT_TIMEOUT = 10 * 60
+
+    # Flask-Limiting
+    RATELIMIT_HEADERS_ENABLED = True
