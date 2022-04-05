@@ -22,7 +22,7 @@ class Recipe(db.Model):
         return cls.query.filter_by(id=recipe_id).first()
 
     @classmethod
-    def get_all_published(cls, q, page, per_page):
+    def get_all_published(cls, q, page, per_page, sort, order):
         keyword = '%{keyword}%'.format(keyword=q)
 
         if order == 'asc':

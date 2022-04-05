@@ -235,3 +235,16 @@
                                         cls.description.ilike(keyword)),
                                     cls.is_publish.is_(True)).\
                              order_by(sort_logic).paginate(page=page, per_page=per_page)
+
+
+
+- Testing the Sorting and Ordering
+
+    - Retrieve the recipe list, ordered by 'cook_time'.
+
+        http://localhost:5000/recipes?sort=cook_time&order=desc
+
+
+    - Retrieve the recipe list, ordered by 'num_of_servings' ascending.
+
+        http://localhost:5000/recipes?sort=num_of_servings&order=asc
