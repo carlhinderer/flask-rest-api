@@ -1,0 +1,68 @@
+-----------------------------------------------------------------------
+|  CHAPTER 9 - CACHING & RATE LIMITING                                |
+-----------------------------------------------------------------------
+
+- Caching
+
+    - We'll add a simple caching function, which caches query results temporarily in application
+        memory.  We'll use the 'Flask-Caching' extension to do this.
+
+
+    - Many applications use this type of caching, storing the cache in the same web server.
+        Another approach is to use something like Memcached or Redis.
+
+
+    - The Flask-Caching flow works like:
+
+        1. Request the get /recipes resource.
+
+        2. Use the key to search for the existing cache (Flask-Caching will be using request.path 
+             and hashed_args to be the key value, for example, 
+             recipesbcd8b0c2eb1fce714eab6cef0d771acc).
+
+        3. If the recipes were previously cached, return the cached data.
+
+        4. If no cache for these recipes exists, follow the standard flow to get the recipes
+             from the database.
+
+        5. Save the result (the recipe data) in the cache.
+
+        6. Return the recipe data.
+
+
+
+- Implementing Caching Functionality
+
+    - We'll add the 'Flask-Caching' package in 'requirements.txt':
+
+        Flask-Caching==1.7.2
+
+
+    - Import 'Cache' in 'extensions.py' and instantiate it.
+
+        from flask_caching import Cache
+
+        cache = Cache()
+
+
+    - Initialize the cache in 'app.py'.
+
+        from extensions import cache
+
+        def register_extensions(app):
+            ...
+            cache.init_app(app)
+
+
+    - Add the caching-related configuration in 'config.py'.
+
+        CACHE_TYPE = 'simple'
+        CACHE_DEFAULT_TIMEOUT = 10 * 60
+
+
+    - We'll add the cache decorator to the 'RecipeListResource.get' method in 'resources/recipe.py'.
+
+        class RecipeListResource(Resource):
+            @use_kwargs({...})
+            @cache.cached(timeout=60, query_string=True)
+            def get(self, q, page, per_page, sort, order):

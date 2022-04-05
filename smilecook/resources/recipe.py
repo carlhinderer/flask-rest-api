@@ -20,6 +20,7 @@ class RecipeListResource(Resource):
                  'per_page': fields.Int(missing=20),
                  'sort': fields.Str(missing='created_at'),
                  'order': fields.Str(missing='desc')})
+    @cache.cached(timeout=60, query_string=True)
     def get(self, q, page, per_page, sort, order):
         if sort not in ['created_at', 'cook_time', 'num_of_servings']:
             sort = 'created_at'
