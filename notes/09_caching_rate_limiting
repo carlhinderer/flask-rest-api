@@ -212,10 +212,12 @@
         IP whitelist.
 
 
-    - We'll add an '@limiter.request_filter' in 'app.py'.
+    - We'll add an '@limiter.request_filter' in 'app.py' in the 'register_exceptions' method.
 
         from flask import request
 
-        @limiter.request_filter
-        def ip_whitelist():
-            return request.remote_addr == '127.0.0.1
+        def register_extensions(app):
+            ...
+            @limiter.request_filter
+            def ip_whitelist():
+                return request.remote_addr == '127.0.0.1

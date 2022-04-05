@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request
 from flask_migrate import Migrate
 from flask_restful import Api
@@ -7,19 +9,42 @@ from config import Config
 from extensions import db, image_set, jwt, cache, limiter
 from models.user import User
 
-from resources.recipe import (RecipeListResource, RecipeResource, 
+from resources.recipe import (
+    RecipeListResource, 
+    RecipeResource, 
     RecipePublishResource)
-from resources.token import black_list, RefreshResource, RevokeResource, TokenResource
-from resources.user import (MeResource, UserListResource, UserResource,
-    UserRecipeListResource, UserActivateResource, UserAvatarUploadResource)
+
+from resources.token import (
+    black_list,
+    RefreshResource,
+    RevokeResource,
+    TokenResource)
+
+from resources.user import (
+    MeResource,
+    UserListResource,
+    UserResource,
+    UserRecipeListResource,
+    UserActivateResource,
+    UserAvatarUploadResource)
 
 
 def create_app():
+    env = os.environ.get('ENV', 'Development')
+
+    if env == 'Production':
+        config_str = 'config.ProductionConfig'
+    elif env == 'Staging':
+        config_str = 'config.StagingConfig'
+    else:
+        config_str = 'config.DevelopmentConfig'
+
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_str)
 
     register_extensions(app)
     register_resources(app)
+
     return app
 
 

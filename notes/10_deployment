@@ -1,0 +1,63 @@
+-----------------------------------------------------------------------
+|  CHAPTER 10 - DEPLOYMENT                                            |
+-----------------------------------------------------------------------
+
+- IaaS, PaaS, and SaaS
+
+    - IaaS = Infrastructure like servers, software, network devices
+           = AWS EC2 and GCE
+           = Very flexible
+           = Still need to understand underlying platforms
+
+    - PaaS = Users don't worry about infrastructure, just deploy apps
+           = Heroku, Azure, AWS Elastic Beanstalk
+           = Reduced setup time, just worry about app code
+           = Higher cost
+
+    - SaaS = Just get application services from third party web apps
+           = Gmail, Dropbox, Salesforce, Slack
+           = Low cost, easy and effective
+           = Inflexible, data security and availability can be concerns
+
+
+
+- Creating Separate Production, Staging, and Development Environments
+
+    - We're going to split the 'config.py' into 4 separate scripts.  Here is the new version of
+        'config.py', which contains settings common to all environments.
+
+        import os
+
+        class Config:
+            ...
+
+        class DevelopmentConfig(Config):
+            ...
+
+        class StagingConfig(Config):
+            ...
+
+        class ProductionConfig(Config):
+            ...
+
+
+    - Then, we just need to modify 'app.py' to use the correct environment.
+
+        import os
+
+        def create_app():
+            env = os.environ.get('ENV', 'Development')
+
+            if env == 'Production':
+                config_str = 'config.ProductionConfig'
+            elif env == 'Staging':
+                config_str = 'config.StagingConfig'
+            else:
+                config_str = 'config.DevelopmentConfig'
+
+            app = Flask(__name__)
+            app.config.from_object(config_str)
+
+            ...
+
+            return app
