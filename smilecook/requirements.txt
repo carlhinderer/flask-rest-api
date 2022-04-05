@@ -14,4 +14,4 @@ Pillow==6.2.1
 psycopg2==2.8.3
 PyJWT==1.7.1
 webargs==5.4.0
-Werkzeug==2.0.0
+Werkzeug==1.0.1

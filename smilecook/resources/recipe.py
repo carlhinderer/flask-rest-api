@@ -5,6 +5,7 @@ from http import HTTPStatus
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 
+from extensions import cache
 from models.recipe import Recipe
 from schemas.recipe import RecipeSchema, RecipePaginationSchema
 
@@ -22,6 +23,7 @@ class RecipeListResource(Resource):
                  'order': fields.Str(missing='desc')})
     @cache.cached(timeout=60, query_string=True)
     def get(self, q, page, per_page, sort, order):
+        print('Querying database...')
         if sort not in ['created_at', 'cook_time', 'num_of_servings']:
             sort = 'created_at'
 

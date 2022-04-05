@@ -66,3 +66,31 @@
             @use_kwargs({...})
             @cache.cached(timeout=60, query_string=True)
             def get(self, q, page, per_page, sort, order):
+                ...
+
+
+    - We add some logging methods to the definition of 'register_exceptions' in 'app.py' so that 
+        we can see the caching behavior.
+
+        def register_exceptions():
+            ...
+            @app.before_request
+            def before_request():
+                print('\n==================== BEFORE REQUEST ====================\n')
+                print(cache.cache._cache.keys())
+                print('\n=======================================================\n')
+
+            @app.after_request
+            def after_request(response):
+                print('\n==================== AFTER REQUEST ====================\n')
+                print(cache.cache._cache.keys())
+                print('\n=======================================================\n')
+
+
+
+- Testing the Caching Function
+
+    - Try sending the same query multiple times, and in the application logs we can see the caching
+        working.
+
+        http://localhost:5000/recipes

@@ -22,6 +22,7 @@ def create_app():
     register_resources(app)
     return app
 
+
 def register_extensions(app):
     db.init_app(app)
     migrate = Migrate(app, db)
@@ -33,6 +34,20 @@ def register_extensions(app):
     def check_if_token_in_blacklist(decrypted_token):
         jti = decrypted_token['jti']
         return jti in black_list
+
+    @app.before_request
+    def before_request():
+        print('\n==================== BEFORE REQUEST====================\n')
+        print(cache.cache._cache.keys())
+        print('\n=======================================================\n')
+
+    @app.after_request
+    def after_request(response):
+        print('\n==================== AFTER REQUEST====================\n')
+        print(cache.cache._cache.keys())
+        print('\n=======================================================\n')
+        return response
+
 
 def register_resources(app):
     api = Api(app)
