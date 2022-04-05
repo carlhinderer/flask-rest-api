@@ -94,3 +94,41 @@
         working.
 
         http://localhost:5000/recipes
+
+
+
+- Clearing the Cache
+
+    - We'll need to clear the cache when data is updated, since we don't want to serve stale
+        data.  To see this, we can retrieve recipe data, update it, and we'll see that the
+        data is stale.
+
+
+    - Add a new method in 'utils.py' to clear the cache.
+
+        from extensions import cache
+
+        def clear_cache(key_prefix):
+            keys = [key for key in cache._cache.keys() if key.startswith(key_prefix)]
+            cache.delete_many(*keys)
+
+
+    - Next, we need to invoke 'clear_cache' is the resources that update recipe data in
+        'resources/recipe.py'.
+
+        RecipeResource.patch
+        RecipeResource.delete
+        RecipePublishResource.put
+        RecipePublishResource.delete
+        RecipeCoverUploadResource.put
+
+
+        # Clear the cache before returning
+        clear_cache('/recipes')
+
+
+    - We also need to update the 'UserAvatarUploadResource.put' method in 'resources/user.py'. 
+
+        from utils import clear_cache
+
+        clear_cache('/recipes')

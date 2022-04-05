@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from passlib.hash import pbkdf2_sha256
 from PIL import Image
 
-from extensions import image_set
+from extensions import image_set, cache
 
 
 def hash_password(password):
@@ -67,3 +67,7 @@ def save_image(image, folder):
 
     filename = compress_image(filename=filename, folder=folder)
     return filename
+
+def clear_cache(key_prefix):
+    keys = [key for key in cache._cache.keys() if key.startswith(key_prefix)]
+    cache.delete_many(*keys)

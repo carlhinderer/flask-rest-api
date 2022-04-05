@@ -13,7 +13,7 @@ from models.recipe import Recipe
 from models.user import User
 from schemas.recipe import RecipeSchema, RecipePaginationSchema
 from schemas.user import UserSchema
-from utils import generate_token, hash_password, save_image, verify_token
+from utils import clear_cache, generate_token, hash_password, save_image, verify_token
 
 
 # Marshmallow schemas
@@ -155,7 +155,9 @@ class UserAvatarUploadResource(Resource):
                 os.remove(avatar_path)
 
         filename = save_image(image=file, folder='avatars')
+        
         user.avatar_image = filename
         user.save()
+        clear_cache
 
         return user_avatar_schema.dump(user).data, HTTPStatus.OK
