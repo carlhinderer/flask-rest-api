@@ -208,4 +208,14 @@
 
 - Adding a Whitelist
 
-    - 
+    - If we want to ease the rate limit for some customers (or the developers), we can set up an
+        IP whitelist.
+
+
+    - We'll add an '@limiter.request_filter' in 'app.py'.
+
+        from flask import request
+
+        @limiter.request_filter
+        def ip_whitelist():
+            return request.remote_addr == '127.0.0.1
