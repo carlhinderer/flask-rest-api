@@ -61,3 +61,97 @@
             ...
 
             return app
+
+
+
+- Creating a New Heroku Application
+
+    - Log into Heroku account, and select 'Create New App'.  We'll get a new URL that looks like:
+
+        https://{app_name}.herokuapp.com/
+
+
+    - Next, we need to install Heroku Postgres add-on.
+
+        > Resources
+        > Find More Addons
+        > Heroku Postgres
+            > Hobby Dev - Free Plan
+
+    
+    - Then, we'll set up the environment variables needed for our app.
+
+        1. We generate a secret key locally to be used for our 'SECRET_KEY'.
+
+             import os
+             os.urandom(24)
+
+        2. Go to the 'Settings' tab and set up:
+
+             ENV
+             MAILGUN_API_KEY
+             MAILGUN_DOMAIN
+             SECRET_KEY
+
+
+
+- Deployment Using Heroku Git
+
+    - A 'Procfile' is a file that will be executed during the startup process in Heroku.  Any
+        setup or server start-up scripts can be included in this file.
+
+
+    - We'll be using GUnicorn, a Python WSGI HTTP server that is compatible with various web
+        applications.  It can be used as an interface between web servers and web applications.
+
+
+    - We'll need to have both Git and the Heroku CLI installed.
+
+
+    - We'll create a '.gitignore' file for the project.
+
+        static/images/avatars/*
+        static/images/recipes/*
+        .idea/
+        venv/
+
+
+    - Next, we'll configure out Git repo for Heroku:
+
+        $ heroku login
+        $ git init
+        $ heroku git:remote -a your-heroku-app
+
+
+    - We need to add 'gunicorn' to our 'requirements.txt'.
+
+        gunicorn==19.9.0
+
+
+    - Create a 'main.py' file under the project root folder.  This is the file that will be
+        executed by Gunicorn 
+
+        from app import create_app
+
+        app = create_app()
+
+
+    - Then, we will create our 'Procfile', also at the project root folder.
+
+        release: flask db upgrade
+        web: gunicorn main:app
+
+
+    - Now, push the changes up to Heroku.
+
+        $ git add .
+        $ git commit -am "First Commit"
+        $ git push heroku master
+
+
+    - We can use pgadmin using the credentials provided on the Heroku dashboard to make sure our
+        database tables have been set up as expected.
+
+
+    - To test our Heroku deployment, we can run the same tests from Postman.  We just need to change
+        the base URL in our requests to 'https://your_heroku_app.herokuapp.com'.
